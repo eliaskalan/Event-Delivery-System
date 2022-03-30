@@ -9,7 +9,7 @@ public interface Node {
     void init(int number);
     void updateNodes();
 
-    //@TODO This must be  properties i don't know what that is 
-    List<Broker> brokers;
+    //@TODO This must be  properties i don't know what that is
+    //List<Broker> brokers;
 
 }
