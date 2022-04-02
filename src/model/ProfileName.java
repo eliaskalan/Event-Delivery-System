@@ -8,13 +8,13 @@ public class ProfileName {
     private static int usersNum = 0;
     HashMap<String, ArrayList<Value>>  userVideoFilesMap;
     HashMap<String,Integer> subscribedConversations;
-    int userId;
+    String userId;
 
     ProfileName(String profileName) {
         this.profileName = profileName;
         this.userVideoFilesMap = null;
         this.subscribedConversations = null;
-        this.userId = usersNum;
+        this.userId = Integer.toString(usersNum);
         usersNum++;
     }
 
