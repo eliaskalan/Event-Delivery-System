@@ -3,13 +3,13 @@ package controller;
 import java.util.List;
 
 
-public interface Broker {
-    List<Consumer> registerPublishers = null;
-    List<Publisher> registeredPublishers=null;
+public interface BrokerInterface {
+    List<ConsumerInterface> registerPublishers = null;
+    List<PublisherInterface> registeredPublishers=null;
     //TODO Add proper name
-    Consumer acceptConection(Consumer cons);
+    ConsumerInterface acceptConection(ConsumerInterface cons);
     //TODO Add proper name
-    Publisher acceptConection(Publisher publ);
+    PublisherInterface acceptConection(PublisherInterface publ);
     void calculateKeys();
     //TODO Add proper name
     void filterConsumers(String comsumer);

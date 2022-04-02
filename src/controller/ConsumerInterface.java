@@ -1,6 +1,6 @@
 package controller;
 import model.Value;
-public interface Consumer {
+public interface ConsumerInterface {
     void disconnect(String disconnect);
     void register(String register);
     //TODO Add proper name

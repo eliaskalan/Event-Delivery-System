@@ -2,8 +2,8 @@ package controller;
 
 import java.util.List;
 
-public interface Node {
-    List<Broker> brokers=null;
+public interface NodeInterface {
+    List<BrokerInterface> BROKER_INTERFACES =null;
 
     void connect();
     void disconnect();
