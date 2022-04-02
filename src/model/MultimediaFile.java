@@ -1,3 +1,5 @@
+package model;
+
 public class MultimediaFile {
     String multimediaFileName;
     String profileName;

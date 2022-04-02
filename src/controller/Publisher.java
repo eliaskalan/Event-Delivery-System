@@ -1,4 +1,8 @@
+package controller;
+import model.Value;
+import model.ProfileName;
 import java.util.ArrayList;
+import model.MultimediaFile;
 
 public interface Publisher {
     ProfileName profileName = null;
@@ -12,7 +16,7 @@ public interface Publisher {
     //TODO Add proper name
     void notifyFailure(Broker notify);
     //TODO put proper names
-    void push(String a,Value b);
+    void push(String a, Value b);
 
 
 }
