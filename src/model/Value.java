@@ -3,8 +3,7 @@ package model;
 public class Value {
     MultimediaFile multimediaFile ;
 
-    Value()
-    {
-
+    Value(MultimediaFile multimediaFile) {
+        this.multimediaFile = multimediaFile;
     }
 }
