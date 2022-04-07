@@ -54,7 +54,7 @@ public class Publisher extends Node{
 
     }
     public void push(String a, Value b) {
-        //ToDo string is hash code?
+        //ToDo string a is hash code?
         try{
             out.writeChars(a);
             out.flush();
