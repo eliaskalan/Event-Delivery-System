@@ -4,13 +4,26 @@ import model.MultimediaFile;
 import model.ProfileName;
 import model.Value;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class Publisher extends Node{
     ProfileName profileName;
+    Socket requestSocket = null;
+    ObjectOutputStream out = null;
     Publisher(int ip, int port, String profileName) {
         super(port);
         this.profileName = new ProfileName(profileName);
+        try{
+            this.requestSocket = new Socket(String.valueOf(ip), port);
+            this.out = new ObjectOutputStream(this.requestSocket.getOutputStream());
+        } catch (IOException ioException) {
+
+        }
+
+
     }
 
     public ArrayList<Value> generateChunks(MultimediaFile multFile) {
@@ -41,6 +54,12 @@ public class Publisher extends Node{
 
     }
     public void push(String a, Value b) {
+        //ToDo string is hash code?
+        try{
+            out.writeChars(a);
+            out.flush();
+        }catch (IOException ioException){
 
+        }
     }
 }
