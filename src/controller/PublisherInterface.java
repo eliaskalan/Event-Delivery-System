@@ -4,7 +4,7 @@ import model.ProfileName;
 import java.util.ArrayList;
 import model.MultimediaFile;
 
-public interface PublisherInterface {
+public interface PublisherInterface{
     ProfileName profileName = null;
     //TODO Add proper name
     ArrayList<Value> generateChunks(MultimediaFile multFile);

@@ -10,7 +10,7 @@ public class ProfileName {
     HashMap<String,Integer> subscribedConversations;
     String userId;
 
-    ProfileName(String profileName) {
+    public ProfileName(String profileName) {
         this.profileName = profileName;
         this.userVideoFilesMap = null;
         this.subscribedConversations = null;
