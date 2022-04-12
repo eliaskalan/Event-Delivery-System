@@ -1,17 +1,46 @@
 package controller;
-
+import java.io.*;
+import java.net.*;
 import java.util.List;
 
-public interface Node {
-    List<Broker> brokers=null;
+public class Node implements NodeInterface{
+    ServerSocket providerSocket;
+    Socket connection = null;
+    List<Broker> brokers;
+    public int port;
+    Node(int port) {
+        this.port = port;
+    }
 
-    void connect();
-    void disconnect();
-    //TODO add proper name
-    void init(int number);
-    void updateNodes();
+    public void connect() {
+        try {
+            providerSocket = new ServerSocket(port, 10);
 
-    //@TODO This must be  properties i don't know what that is
-    //List<Broker> brokers;
+            while (true) {
+                connection = providerSocket.accept();
 
+//                Thread t = new ActionsForClients(connection);
+//                t.start();
+
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        } finally {
+                disconnect();
+        }
+    }
+
+    public void disconnect() {
+        try {
+            providerSocket.close();
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+
+
+
+    public void updateNodes() {
+    }
 }
