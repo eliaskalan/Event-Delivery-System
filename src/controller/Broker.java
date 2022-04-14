@@ -6,18 +6,18 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Broker extends Node{
-    List<ConsumerInterface> registerPublishers = null;
-    List<PublisherInterface> registeredPublishers=null;
+    List<Consumer> registerPublishers = null;
+    List<Publisher> registeredPublishers=null;
     String hash;
     Broker(int port){
         super(port);
         calculateKeys();
     }
-    public void acceptConection(ConsumerInterface cons) {
+    public void acceptConection(Consumer cons) {
         registerPublishers.add(cons);
     }
 
-    public void acceptConection(PublisherInterface publ) {
+    public void acceptConection(Publisher publ) {
         registeredPublishers.add(publ);
     }
 
