@@ -18,5 +18,9 @@ public class ProfileName {
         usersNum++;
     }
 
+    public int getUserId(){
+        return usersNum;
+    }
+
 
 }

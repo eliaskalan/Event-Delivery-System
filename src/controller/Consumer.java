@@ -9,9 +9,9 @@ import java.net.Socket;
 public class Consumer{
     Socket requestSocket = null;
     ObjectOutputStream in = null;
-    Consumer(int ip, int port) {
+    Consumer(String ip, int port) {
         try{
-            this.requestSocket = new Socket(String.valueOf(ip), port);
+            this.requestSocket = new Socket(ip, port);
             this.in = new ObjectOutputStream(this.requestSocket.getOutputStream());
         } catch (IOException ioException) {
 

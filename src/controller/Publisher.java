@@ -13,10 +13,10 @@ public class Publisher{
     ProfileName profileName;
     Socket requestSocket = null;
     ObjectOutputStream out = null;
-    Publisher(int ip, int port, String profileName) {
+    Publisher(String ip, int port, String profileName) {
         this.profileName = new ProfileName(profileName);
         try{
-            this.requestSocket = new Socket(String.valueOf(ip), port);
+            this.requestSocket = new Socket(ip, port);
             this.out = new ObjectOutputStream(this.requestSocket.getOutputStream());
         } catch (IOException ioException) {
 

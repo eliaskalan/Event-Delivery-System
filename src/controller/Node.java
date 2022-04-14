@@ -4,20 +4,20 @@ import java.net.*;
 import java.util.List;
 
 public class Node{
-    ServerSocket providerSocket;
+    ServerSocket socket;
     Socket connection = null;
     List<Broker> brokers;
     public int port;
-    Node(int port) {
+    Node(String ip, int port) {
         this.port = port;
     }
 
-    public void connect() {
+    public void connect(String customMessage) {
         try {
-            providerSocket = new ServerSocket(port, 10);
-
+            socket = new ServerSocket(port, 10);
+            System.out.println(customMessage);
             while (true) {
-                connection = providerSocket.accept();
+                connection = socket.accept();
 
 //                Thread t = new ActionsForClients(connection);
 //                t.start();
@@ -32,7 +32,7 @@ public class Node{
 
     public void disconnect() {
         try {
-            providerSocket.close();
+            socket.close();
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
