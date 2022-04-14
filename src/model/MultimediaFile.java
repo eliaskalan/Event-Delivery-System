@@ -18,7 +18,7 @@ public class MultimediaFile {
 
     }
     public static class SplitVideoFile {
-        //@TODO split by size not in 20 equal parts 
+        //@TODO split by size not in 20 equal parts
         public void SplitFile() {
             try {
                 File file = new File("C:/Users/elias/Documents/Despicable Me 2 - Trailer (HD) - YouTube.mp4");//File read from Source folder to Split.
@@ -36,6 +36,7 @@ public class MultimediaFile {
                     String videoFile = splitFile.getAbsolutePath() + "/" + String.format("%02d", i) + "_" + file.getName();// Location to save the files which are Split from the original file.
                     OutputStream outputStream = new FileOutputStream(videoFile);
                     System.out.println("File Created Location: " + videoFile);
+                    //@TODO Split by size (512Kb) not in 20 equal parts
                     int totalPartsToSplit = 20;// Total files to split.
                     int splitSize = inputStream.available() / totalPartsToSplit;
                     int streamSize = 0;
