@@ -3,7 +3,7 @@ import java.io.*;
 import java.net.*;
 import java.util.List;
 
-public class Node implements NodeInterface{
+public class Node{
     ServerSocket providerSocket;
     Socket connection = null;
     List<Broker> brokers;
