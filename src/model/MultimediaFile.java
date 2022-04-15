@@ -36,9 +36,10 @@ public class MultimediaFile {
                     String videoFile = splitFile.getAbsolutePath() + "/" + String.format("%02d", i) + "_" + file.getName();// Location to save the files which are Split from the original file.
                     OutputStream outputStream = new FileOutputStream(videoFile);
                     System.out.println("File Created Location: " + videoFile);
+                    System.out.println(inputStream.available());
                     //@TODO Split by size (512Kb) not in 20 equal parts
                     int totalPartsToSplit = 20;// Total files to split.
-                    int splitSize = inputStream.available() / totalPartsToSplit;
+                    int splitSize =  512000;
                     int streamSize = 0;
                     int read = 0;
                     while ((read = inputStream.read()) != -1) {
