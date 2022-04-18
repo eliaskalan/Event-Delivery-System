@@ -38,7 +38,7 @@ public class Consumer{
             @Override
             public void run() {
                 String msgFromGroupChat;
-                while (true) {
+                while (socket.isConnected()) {
                     System.out.println("listen message");
                     try {
                         //ToDo problem with separate thread
