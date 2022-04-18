@@ -20,6 +20,6 @@ public class Client extends Node{
         String username = scanner.nextLine();
         Client client  = new Client("localhost", 12345, username);
         client.consumer.listenForMessage();
-        //client.publisher.sendMessage();
+        client.publisher.sendMessage();
     }
 }
