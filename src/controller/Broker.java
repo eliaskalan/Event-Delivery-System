@@ -1,8 +1,6 @@
 package controller;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -11,7 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-public class Broker extends Node implements Runnable{
+public class Broker extends Node{
     List<Client> registerClient = null;
     String hash;
     private BufferedReader bufferedReader;
@@ -76,25 +74,10 @@ public class Broker extends Node implements Runnable{
         }
     }
 
-    @Override
-    public void run() {
-        String messageFromClient;
-        // Continue to listen for messages while a connection with the client is still established.
-        while (true) {
-            try {
-                // Read what the client sent and then send it to every other client.
-                messageFromClient = bufferedReader.readLine();
-                broadcastMessage(messageFromClient, -1);
-            } catch (IOException e) {
-                // Close everything gracefully.
-                break;
-            }
-        }
-    }
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect("A new client has connected!");
-        broker.run();
     }
+
 
 }
