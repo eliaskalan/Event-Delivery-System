@@ -4,12 +4,14 @@ import java.net.*;
 import java.util.List;
 
 public class Node{
-    ServerSocket socket;
+    public ServerSocket socket;
     Socket connection = null;
-    List<Broker> brokers;
-    public int port;
+    public List<Broker> brokers;
+    private int port;
+    private String ip;
     Node(String ip, int port) {
         this.port = port;
+        this.ip = ip;
     }
 
     public void connect(String customMessage) {
@@ -17,11 +19,9 @@ public class Node{
             socket = new ServerSocket(port, 10);
             System.out.println(customMessage);
             while (true) {
+                System.out.println("A new connection");
                 connection = socket.accept();
-
-//                Thread t = new ActionsForClients(connection);
-//                t.start();
-
+                System.out.println(connection);
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -38,7 +38,13 @@ public class Node{
         }
     }
 
+    public int getPort(){
+        return this.port;
+    }
 
+    public String getIp(){
+        return this.ip;
+    }
 
 
     public void updateNodes() {

@@ -11,7 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Scanner;
 
-public class Broker extends Node{
+public class Broker extends Node implements Runnable{
     List<Client> registerClient = null;
     String hash;
     private BufferedReader bufferedReader;
@@ -30,7 +30,7 @@ public class Broker extends Node{
             //  hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
             //Todo we want also to add ip
-            byte[] messageDigest = md.digest(Integer.toString(this.port).getBytes());
+            byte[] messageDigest = md.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
 
             BigInteger no = new BigInteger(1, messageDigest);
             String hashtext = no.toString(16);
@@ -63,7 +63,7 @@ public class Broker extends Node{
     public void broadcastMessage(String messageToSend, int userId) {
         for (Client client : registerClient) {
             try {
-                if (!(userId != client.publisher.profileName.getUserId())) {
+                if (userId != client.publisher.profileName.getUserId()) {
                     this.bufferedWriter.write(messageToSend);
                     this.bufferedWriter.newLine();
                     this.bufferedWriter.flush();
@@ -75,9 +75,25 @@ public class Broker extends Node{
         }
     }
 
+    @Override
+    public void run() {
+        String messageFromClient;
+        // Continue to listen for messages while a connection with the client is still established.
+        while (true) {
+            try {
+                // Read what the client sent and then send it to every other client.
+                messageFromClient = bufferedReader.readLine();
+                broadcastMessage(messageFromClient, -1);
+            } catch (IOException e) {
+                // Close everything gracefully.
+                break;
+            }
+        }
+    }
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect("A new client has connected!");
+        broker.run();
     }
 
 }

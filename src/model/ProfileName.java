@@ -22,5 +22,9 @@ public class ProfileName {
         return usersNum;
     }
 
+    public String getProfileName(){
+        return  this.profileName;
+    }
+
 
 }
