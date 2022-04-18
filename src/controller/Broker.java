@@ -61,6 +61,7 @@ public class Broker extends Node implements Runnable{
     }
 
     public void broadcastMessage(String messageToSend, int userId) {
+        System.out.println("Broker send a message!");
         for (Client client : registerClient) {
             try {
                 if (userId != client.publisher.profileName.getUserId()) {
