@@ -7,7 +7,6 @@ import java.util.Scanner;
 public class Client extends Node{
     Consumer consumer;
     Publisher publisher;
-    Socket socket;
     Client(String ip, int port, String name) throws IOException {
         super(ip, port);
         this.consumer = new Consumer(ip, port);
