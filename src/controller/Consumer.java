@@ -8,29 +8,19 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class Consumer{
-    Socket requestSocket = null;
-    private BufferedReader bufferedReader;
+import static utils.socketMethods.closeEverything;
 
+public class Consumer{
+    private BufferedReader bufferedReader;
     private Socket socket;
-    Consumer(String ip, int port) throws IOException {
-        this.socket = new Socket(ip, port);
+    Consumer(Socket socket) throws IOException {
+        this.socket = socket;
         try{
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException ioException) {
-
+            System.out.println("There was a problem in the connection of the client");
+            closeEverything(socket, bufferedReader);
         }
-    }
-    //ToDo what we do here?
-    public void disconnect(String userId) {
-
-    }
-    public void register(String register) {
-
-    }
-
-    public void showConversationDate(String name, Value date) {
-
     }
 
     public void listenForMessage() {
@@ -39,16 +29,12 @@ public class Consumer{
             public void run() {
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
-                    System.out.println("listen message");
                     try {
-                        //ToDo problem with separate thread
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        closeEverything(socket, bufferedReader);
                     }
-                    System.out.println("i pass");
-
                 }
             }
         }).start();
