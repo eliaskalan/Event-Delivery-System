@@ -18,5 +18,13 @@ public class ProfileName {
         usersNum++;
     }
 
+    public int getUserId(){
+        return usersNum;
+    }
+
+    public String getProfileName(){
+        return  this.profileName;
+    }
+
 
 }

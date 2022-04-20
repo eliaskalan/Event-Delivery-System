@@ -4,23 +4,28 @@ import model.MultimediaFile;
 import model.ProfileName;
 import model.Value;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Scanner;
 
-public class Publisher extends Node{
+import static utils.socketMethods.closeEverything;
+
+public class Publisher{
     ProfileName profileName;
-    Socket requestSocket = null;
-    ObjectOutputStream out = null;
-    Publisher(int ip, int port, String profileName) {
-        super(port);
+    private BufferedWriter bufferedWriter;
+    private Socket socket;
+    Publisher(Socket socket, String profileName) throws IOException {
+        this.socket = socket;
         this.profileName = new ProfileName(profileName);
         try{
-            this.requestSocket = new Socket(String.valueOf(ip), port);
-            this.out = new ObjectOutputStream(this.requestSocket.getOutputStream());
+            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
-
+            System.out.println("There was a problem in the connection of the client");
+            closeEverything(socket, bufferedWriter);
         }
 
 
@@ -30,19 +35,10 @@ public class Publisher extends Node{
         return null;
     }
     public void getBrokerList() {
-        //ToDo what is the purpose of this method?
-        for(Broker x : brokers){
-            System.out.println(x);
-        }
+
     }
 
     public Broker hashTopic(String hash) {
-        //ToDo what is the purpose of this method?
-        for(Broker x : brokers){
-            if(x.hash.compareTo(hash) == 0){
-                return x;
-            }
-        }
         return null;
     }
 
@@ -50,16 +46,35 @@ public class Publisher extends Node{
 
     }
 
-    public void notifyFailure(BrokerInterface notify) {
+    public void notifyFailure(Broker notify) {
 
     }
-    public void push(String a, Value b) {
-        //ToDo string a is hash code?
-        try{
-            out.writeChars(a);
-            out.flush();
-        }catch (IOException ioException){
+//    public void push(String a, Value b) {
+//        //ToDo string a is hash code?
+//        try{
+//            out.writeChars(a);
+//            out.flush();
+//        }catch (IOException ioException){
+//
+//        }
+//    }
 
-        }
+    public void sendMessage() throws IOException {
+                try {
+                    bufferedWriter.write(this.profileName.getProfileName());
+                    bufferedWriter.newLine();
+                    bufferedWriter.flush();
+
+                    Scanner scanner = new Scanner(System.in);
+                    while (socket.isConnected()) {
+                        String messageToSend = scanner.nextLine();
+                        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
+                        bufferedWriter.newLine();
+                        bufferedWriter.flush();
+
+                    }
+                } catch (IOException e) {
+                    closeEverything(socket, bufferedWriter);
+                }
+            }
     }
-}
