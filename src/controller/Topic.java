@@ -27,7 +27,9 @@ public class Topic {
     public String getLastMessageOfUser(String userId){
         for(UserTopic user: users){
             if(user.getUserId().equals(userId)){
-                return getMessagesFromLength(user.lastMessageHasUserRead);
+                String messages = getMessagesFromLength(user.lastMessageHasUserRead);
+                user.setLastMessageHasUserRead(messageLength() - 1);
+                return messages;
             }
         }
         return "We don't find any new message";
@@ -35,7 +37,7 @@ public class Topic {
 
     public String getMessagesFromLength(int x){
         String message = "";
-        for(int i = x; i < messages.size(); i++){
+        for(int i = x; i < messages.size() - 1; i++){
             Message messageObject = messages.get(i);
             message = message + "\n" + messageObject.getUserName() + ": " + messageObject.getMessage();
         }
