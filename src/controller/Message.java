@@ -4,20 +4,22 @@ import model.ProfileName;
 
 public class Message {
     private String context;
-    private ProfileName user;
-
-    Message(String context, ProfileName user){
+    private String userId;
+    private String userName;
+    Message(String context, String user, String userName){
         this.context = context;
-        this.user = user;
+        this.userId = user;
+        this.userName = userName;
     }
 
     public String getMessage(){
         return this.context;
     }
     public String getUserId(){
-        return  this.user.getUserId();
+        return  this.userId;
     }
+
     public String getUserName(){
-        return  this.user.getProfileName();
+        return this.userName;
     }
 }
