@@ -1,7 +1,4 @@
 package controller;
-
-import model.ProfileName;
-
 public class Message {
     private String context;
     private String userId;

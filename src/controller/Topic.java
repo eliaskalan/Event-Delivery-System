@@ -35,9 +35,9 @@ public class Topic {
         return "We don't find any new message";
     }
 
-    public String getMessagesFromLength(int x){
+    public String getMessagesFromLength(int lastMessageHasRead){
         String message = "";
-        for(int i = x; i < messages.size() - 1; i++){
+        for(int i = lastMessageHasRead + 1; i < messages.size(); i++){
             Message messageObject = messages.get(i);
             message = message + "\n" + messageObject.getUserName() + ": " + messageObject.getMessage();
         }
