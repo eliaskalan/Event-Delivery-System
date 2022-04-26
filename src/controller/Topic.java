@@ -1,12 +1,13 @@
 package controller;
 
 import model.ProfileName;
+
 import java.util.ArrayList;
 
 public class Topic {
     private String topicName;
-    private ArrayList<Message> messages;
-    private ArrayList<UserTopic> users;
+    private ArrayList<Message> messages = new ArrayList<Message>();
+    private ArrayList<UserTopic> users = new ArrayList<UserTopic>();
 
     Topic(String topicName){
         this.topicName = topicName;
@@ -63,5 +64,11 @@ public class Topic {
 
     public int messageLength(){
         return users.size();
+    }
+
+    public static void main(String[] args) {
+        Topic topic = new Topic("hello");
+        System.out.println(topic.users.size());
+        topic.addUser(new ProfileName("user1"));
     }
 }
