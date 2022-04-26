@@ -1,5 +1,7 @@
 package controller;
 
+import model.ProfileName;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,11 +17,13 @@ public class Broker{
     private int port;
     private String ip;
     public ServerSocket socket;
+    private static ArrayList<Topic> Topics = new ArrayList<Topic>();
 
     Broker(String ip, int port){
         this.port = port;
         this.ip = ip;
         calculateKeys();
+        Topics.add(new Topic("DS"));
     }
     public void disconnect() {
         try {
@@ -93,6 +97,8 @@ public class Broker{
                 this.clientUsername = bufferedReader.readLine();
                 acceptConnection(this);
                 this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
+                Topics.get(0).addUser(new ProfileName(clientUsername)); // TODO get(0) must change to a method that return Topics by topicname
+
             }catch (IOException e){
                 removeClient();
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -131,6 +137,11 @@ public class Broker{
                     messageFromClient = bufferedReader.readLine();
                     broadcastMessage(messageFromClient);
                     System.out.println("Server log: " + messageFromClient);
+
+                    String[] arrOfStr = messageFromClient.split(": ");
+                    String usid = Topics.get(0).getUserIDbyName(arrOfStr[0]);
+                    Topics.get(0).addMessage(arrOfStr[1], usid, arrOfStr[0]);
+
                 } catch (IOException e) {
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;

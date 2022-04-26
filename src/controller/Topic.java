@@ -66,6 +66,18 @@ public class Topic {
         return users.size();
     }
 
+    public String getUserIDbyName(String username){
+        String id = "";
+
+        for (UserTopic usertopic: users){
+            if(usertopic.getUserName().equals(username)){
+                id = usertopic.getUserId();
+            }
+        }
+        System.out.println("Topic.java: ID: " + id);
+        return id;
+    }
+
     public static void main(String[] args) {
         Topic topic = new Topic("hello");
         System.out.println(topic.users.size());
