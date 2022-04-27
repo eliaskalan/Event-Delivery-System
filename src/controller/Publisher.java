@@ -67,7 +67,6 @@ public class Publisher{
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
 
-                    System.out.println("sendMessage() - Publisher");
 
                     Scanner scanner = new Scanner(System.in);
                     while (socket.isConnected()) {
@@ -75,7 +74,6 @@ public class Publisher{
                         bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
-                        System.out.println("sendMessage() - Publisher - While");
                     }
                 } catch (IOException e) {
                     closeEverything(socket, bufferedWriter);

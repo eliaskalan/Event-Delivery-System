@@ -6,10 +6,12 @@ public class UserTopic {
     ProfileName user;
     int lastMessageHasUserRead;
 
+    Broker.ClientHandler clientHandler;
 
-    UserTopic(ProfileName user, int lastMessage){
+    UserTopic(ProfileName user, int lastMessage, Broker.ClientHandler clientHandler){
         this.user = user;
         this.lastMessageHasUserRead = lastMessage;
+        this.clientHandler = clientHandler;
     }
 
     public String getUserId(){

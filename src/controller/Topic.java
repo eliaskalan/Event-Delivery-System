@@ -13,12 +13,26 @@ public class Topic {
         this.topicName = topicName;
     }
 
-    public void addUser(ProfileName user){
-        users.add(new UserTopic(user, this.messageLength()));
+    public void addUser(ProfileName user, Broker.ClientHandler clientHandler){
+        users.add(new UserTopic(user, this.messageLength(), clientHandler));
+    }
+
+
+    public String sendAllMessages(){
+        String totalMessage = "";
+        for(Message message: messages){
+            totalMessage = totalMessage + "\n" + message;
+        }
+        return totalMessage;
     }
 
     public void addMessage(String context, String userId, String userName){
         messages.add(new Message(context, userId, userName));
+        for(UserTopic user : this.users){
+            if(user.getUserId().equals(userId)){
+                user.setLastMessageHasUserRead(user.lastMessageHasUserRead + 1);
+            }
+        }
     }
 
     public String getLastMessage(){
@@ -38,12 +52,21 @@ public class Topic {
 
     public String getMessagesFromLength(int lastMessageHasRead){
         String message = "";
-        for(int i = lastMessageHasRead + 1; i < messages.size(); i++){
+        for(int i = lastMessageHasRead; i < messages.size(); i++){
             Message messageObject = messages.get(i);
             message = message + "\n" + messageObject.getUserName() + ": " + messageObject.getMessage();
         }
         return message;
     }
+    public String getMessagesFromLength(){
+        String message = "";
+        for(int i = 0; i < messages.size(); i++){
+            Message messageObject = messages.get(i);
+            message = message + "\n" + messageObject.getUserName() + ": " + messageObject.getMessage();
+        }
+        return message;
+    }
+
 
     public int getUserNumber(){
         return this.users.size();
@@ -63,7 +86,7 @@ public class Topic {
     }
 
     public int messageLength(){
-        return users.size();
+        return messages.size();
     }
 
     public String getUserIDbyName(String username){
@@ -88,11 +111,5 @@ public class Topic {
 
     public ArrayList<UserTopic> getUsers(){
         return users;
-    }
-
-    public static void main(String[] args) {
-        Topic topic = new Topic("hello");
-        System.out.println(topic.users.size());
-        topic.addUser(new ProfileName("user1"));
     }
 }

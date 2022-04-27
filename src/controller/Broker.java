@@ -17,13 +17,13 @@ public class Broker {
     private int port;
     private String ip;
     public ServerSocket socket;
-    private static ArrayList<Topic> Topics = new ArrayList<Topic>();
+    private static ArrayList<Topic> topics = new ArrayList<Topic>();
 
     Broker(String ip, int port) {
         this.port = port;
         this.ip = ip;
 //        calculateKeys();
-        Topics.add(new Topic("DS"));
+        topics.add(new Topic("DS"));
     }
 
     public void disconnect() {
@@ -101,7 +101,7 @@ public class Broker {
 //        System.out.println(broker.calculateKeys("DSasgstbxfgbxfA")); // TODO results must be 0, 1, or 2 because of %3. For some values is -1
     }
 
-    private static class ClientHandler implements Runnable {
+    public static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
@@ -113,9 +113,15 @@ public class Broker {
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
-                acceptConnection(this);
-                this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
-                Topics.get(0).addUser(new ProfileName(clientUsername)); // TODO get(0) must change to a method that return Topics by topicname
+                topics.get(0).addUser(new ProfileName(clientUsername), this);
+                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
+                this.bufferedWriter.newLine();
+                this.bufferedWriter.flush();
+                for(UserTopic user: topics.get(0).getUsers()){
+                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
+                    user.clientHandler.bufferedWriter.newLine();
+                    user.clientHandler.bufferedWriter.flush();
+                }
 
             }catch (IOException e){
                 removeClient();
@@ -124,31 +130,31 @@ public class Broker {
 
         }
 
-        private void acceptConnection(ClientHandler client){
-            this.registerClient.add(client);
-        }
 
         public void readyForPull() throws IOException {
-                ClientHandler temphandler;
-                for (Topic topic : Topics) { // (1)
-                    ArrayList<Message> Messages = topic.getMessages();
-                    ArrayList<UserTopic> Users = topic.getUsers();
-                    for (UserTopic user : Users) { // (2)
-                        for(Message msg: Messages){ // (3)
-                            if(user.getUserId().equals(msg.getUserId())){ // maybe if(!...)
-                                broadcastMessage(" ----------- from readyForPull() & boadcast()" + msg.getMessage());
-                            }
-                        }
+                for (Topic topic : topics) {
+                    for (UserTopic user : topic.getUsers()) {
+                                    try {
+                                            int index = user.lastMessageHasUserRead;
+                                            if(index < topic.messageLength()){
+                                                user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
+                                                user.clientHandler.bufferedWriter.newLine();
+                                                user.clientHandler.bufferedWriter.flush();
+                                                user.setLastMessageHasUserRead(topic.messageLength());
+                                            }
+                                    } catch (NullPointerException | IOException e) {
+                                        removeClient();
+                                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                                    }
 
+                        }
                     }
-                }
         }
 
         public void broadcastMessage(String messageToSend) {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
                     try {
-                        System.out.println("broadCastMessage()");
                         client.bufferedWriter.write(messageToSend);
                         client.bufferedWriter.newLine();
                         client.bufferedWriter.flush();
@@ -171,12 +177,11 @@ public class Broker {
             while (clientSocket.isConnected()) {
                 try {
                     messageFromClient = bufferedReader.readLine();
-                    broadcastMessage(messageFromClient);
                     System.out.println("Server log: " + messageFromClient);
 
                     String[] arrOfStr = messageFromClient.split(": ");
-                    String userid = Topics.get(0).getUserIDbyName(arrOfStr[0]);
-                    Topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
+                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
                     readyForPull();
 
                 } catch (IOException e) {
@@ -185,9 +190,5 @@ public class Broker {
                 }
             }
         }
-    }
-
-    private static int getIndexByTopic(String topic){
-        return Topics.indexOf(topic);
     }
 }
