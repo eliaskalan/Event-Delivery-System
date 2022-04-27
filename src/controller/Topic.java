@@ -78,6 +78,10 @@ public class Topic {
         return id;
     }
 
+    public String getTopicName(){
+        return topicName;
+    }
+
     public static void main(String[] args) {
         Topic topic = new Topic("hello");
         System.out.println(topic.users.size());

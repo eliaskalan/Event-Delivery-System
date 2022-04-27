@@ -21,6 +21,7 @@ public class Publisher{
     Publisher(Socket socket, String profileName) throws IOException {
         this.socket = socket;
         this.profileName = new ProfileName(profileName);
+
         try{
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
@@ -49,6 +50,7 @@ public class Publisher{
     public void notifyFailure(Broker notify) {
 
     }
+
 //    public void push(String a, Value b) {
 //        //ToDo string a is hash code?
 //        try{
@@ -65,13 +67,15 @@ public class Publisher{
                     bufferedWriter.newLine();
                     bufferedWriter.flush();
 
+                    System.out.println("sendMessage() - Publisher");
+
                     Scanner scanner = new Scanner(System.in);
                     while (socket.isConnected()) {
                         String messageToSend = scanner.nextLine();
                         bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
-
+                        System.out.println("sendMessage() - Publisher - While");
                     }
                 } catch (IOException e) {
                     closeEverything(socket, bufferedWriter);
