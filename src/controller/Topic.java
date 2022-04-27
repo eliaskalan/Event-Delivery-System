@@ -82,6 +82,14 @@ public class Topic {
         return topicName;
     }
 
+    public ArrayList<Message> getMessages(){
+        return messages;
+    }
+
+    public ArrayList<UserTopic> getUsers(){
+        return users;
+    }
+
     public static void main(String[] args) {
         Topic topic = new Topic("hello");
         System.out.println(topic.users.size());

@@ -93,13 +93,13 @@ public class Broker {
         }
     }
 
+
+
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect();
 //        System.out.println(broker.calculateKeys("DSasgstbxfgbxfA")); // TODO results must be 0, 1, or 2 because of %3. For some values is -1
     }
-
-
 
     private static class ClientHandler implements Runnable {
         private Socket clientSocket;
@@ -128,10 +128,27 @@ public class Broker {
             this.registerClient.add(client);
         }
 
+        public void readyForPull() throws IOException {
+                ClientHandler temphandler;
+                for (Topic topic : Topics) { // (1)
+                    ArrayList<Message> Messages = topic.getMessages();
+                    ArrayList<UserTopic> Users = topic.getUsers();
+                    for (UserTopic user : Users) { // (2)
+                        for(Message msg: Messages){ // (3)
+                            if(user.getUserId().equals(msg.getUserId())){ // maybe if(!...)
+                                broadcastMessage(" ----------- from readyForPull() & boadcast()" + msg.getMessage());
+                            }
+                        }
+
+                    }
+                }
+        }
+
         public void broadcastMessage(String messageToSend) {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
                     try {
+                        System.out.println("broadCastMessage()");
                         client.bufferedWriter.write(messageToSend);
                         client.bufferedWriter.newLine();
                         client.bufferedWriter.flush();
@@ -142,6 +159,7 @@ public class Broker {
                 }
             }
         }
+
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
             registerClient.remove(this);
@@ -159,6 +177,7 @@ public class Broker {
                     String[] arrOfStr = messageFromClient.split(": ");
                     String userid = Topics.get(0).getUserIDbyName(arrOfStr[0]);
                     Topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    readyForPull();
 
                 } catch (IOException e) {
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);

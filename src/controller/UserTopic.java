@@ -6,6 +6,7 @@ public class UserTopic {
     ProfileName user;
     int lastMessageHasUserRead;
 
+
     UserTopic(ProfileName user, int lastMessage){
         this.user = user;
         this.lastMessageHasUserRead = lastMessage;
