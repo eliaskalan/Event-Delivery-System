@@ -18,8 +18,8 @@ public class ProfileName {
         usersNum++;
     }
 
-    public int getUserId(){
-        return usersNum;
+    public String getUserId(){
+        return userId;
     }
 
     public String getProfileName(){
