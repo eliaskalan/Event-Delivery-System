@@ -35,8 +35,7 @@ public class Client{
 
             client.publisher.sendImage();
 
-        }catch (IOException e){
-            System.out.println("Try again!");
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
