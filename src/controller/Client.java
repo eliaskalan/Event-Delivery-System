@@ -32,7 +32,7 @@ public class Client{
         try{
             //client.consumer.listenForMessage();
             //client.publisher.sendMessage();
-
+            //tries to pass 2nd time but send image does not have while method in it
             client.publisher.sendImage();
 
 
