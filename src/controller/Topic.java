@@ -97,7 +97,6 @@ public class Topic {
                 id = usertopic.getUserId();
             }
         }
-        System.out.println("Topic.java: ID: " + id);
         return id;
     }
 

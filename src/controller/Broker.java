@@ -132,23 +132,22 @@ public class Broker {
 
 
         public void readyForPull() throws IOException {
-                for (Topic topic : topics) {
-                    for (UserTopic user : topic.getUsers()) {
-                                    try {
-                                            int index = user.lastMessageHasUserRead;
-                                            if(index < topic.messageLength()){
-                                                user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
-                                                user.clientHandler.bufferedWriter.newLine();
-                                                user.clientHandler.bufferedWriter.flush();
-                                                user.setLastMessageHasUserRead(topic.messageLength());
-                                            }
-                                    } catch (NullPointerException | IOException e) {
-                                        removeClient();
-                                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
-                                    }
-
+            for (Topic topic : topics) {
+                for (UserTopic user : topic.getUsers()) {
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        if(index < topic.messageLength()){
+                            user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
+                            user.clientHandler.bufferedWriter.newLine();
+                            user.clientHandler.bufferedWriter.flush();
+                            user.setLastMessageHasUserRead(topic.messageLength());
                         }
+                    } catch (NullPointerException | IOException e) {
+                        removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
+                }
+            }
         }
 
         public void broadcastMessage(String messageToSend) {
