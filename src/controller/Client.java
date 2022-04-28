@@ -26,6 +26,9 @@ public class Client{
         System.out.println("What is your name?");
         String username = scanner.nextLine();
         Client client  = new Client("localhost", 12345, username);
+        /*System.out.println("Give Topic");
+        String str_topic = scanner.nextLine();
+        Topic topic = new Topic(str_topic);*/
         try{
             client.consumer.listenForMessage();
             client.publisher.sendMessage();

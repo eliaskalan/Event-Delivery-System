@@ -1,11 +1,8 @@
 package controller;
 
-<<<<<<< Updated upstream
-=======
 import model.ProfileName;
 import  java.util.Random;
 
->>>>>>> Stashed changes
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,29 +13,23 @@ import java.security.NoSuchAlgorithmException;
 
 import static utils.socketMethods.closeEverything;
 
-public class Broker{
+public class Broker {
     String hash;
     private int port;
     private String ip;
     public ServerSocket socket;
-<<<<<<< Updated upstream
-=======
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
     private static int thesi;
->>>>>>> Stashed changes
 
-    Broker(String ip, int port){
+    Broker(String ip, int port) {
         this.port = port;
         this.ip = ip;
-<<<<<<< Updated upstream
-        calculateKeys();
-=======
 //        calculateKeys();
         topics.add(new Topic("DS-A"));
         topics.add(new Topic("DS-B"));
         topics.add(new Topic("DS-C"));
->>>>>>> Stashed changes
     }
+
     public void disconnect() {
         try {
             socket.close();
@@ -46,6 +37,7 @@ public class Broker{
             ioException.printStackTrace();
         }
     }
+
     public void connect() {
         try {
             socket = new ServerSocket(port, 10);
@@ -62,47 +54,59 @@ public class Broker{
         }
     }
 
-    public int getPort(){
+    public int getPort() {
         return this.port;
     }
 
-    public String getIp(){
+    public String getIp() {
         return this.ip;
     }
 
-    public void calculateKeys() {
+    public int calculateKeys(String topicname) {
         //Todo we want to return the hash key, compare variables or update an array?
         try {
-            //  hashing MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            //Todo we want also to add ip
-            byte[] messageDigest = md.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
+            String hashtext1, hashtext2;
 
-            BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+            //  hashing MD5
+            MessageDigest md1 = MessageDigest.getInstance("MD5");
+            MessageDigest md2 = MessageDigest.getInstance("MD5");
+            //Todo we want also to add ip
+
+            byte[] messageDigest1 = md1.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
+            byte[] messageDigest2 = md2.digest(topicname.getBytes());
+
+            BigInteger no1 = new BigInteger(1, messageDigest1);
+            hashtext1 = no1.toString(16);
+            BigInteger no2 = new BigInteger(1, messageDigest2);
+            hashtext2 = no2.toString(16);
+
+            while (hashtext1.length() < 32) {
+                hashtext1 = "0" + hashtext1;
             }
-            this.hash =  hashtext;
-        }
-        catch (NoSuchAlgorithmException e) {
+            while (hashtext2.length() < 32) {
+                hashtext2 = "0" + hashtext2;
+            }
+
+            String hashText = hashtext1 + hashtext2;
+
+//            this.hash =  hashText.hashCode();
+
+            return (hashText.hashCode()) % 3;
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
+
+
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect();
+//        System.out.println(broker.calculateKeys("DSasgstbxfgbxfA")); // TODO results must be 0, 1, or 2 because of %3. For some values is -1
     }
 
-<<<<<<< Updated upstream
-
-
-    private static class ClientHandler implements Runnable {
-=======
     public static class ClientHandler implements Runnable {
-        private int indexForTopic;
->>>>>>> Stashed changes
+        private int myThesi;
         private Socket clientSocket;
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
@@ -114,25 +118,22 @@ public class Broker{
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
-<<<<<<< Updated upstream
-                acceptConnection(this);
-                this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
-=======
                 Random rand = new Random();
-
-                this.indexForTopic = rand.nextInt(3);
-
-                topics.get(this.indexForTopic).addUser(new ProfileName(clientUsername), this);
-                this.bufferedWriter.write(topics.get(this.indexForTopic).getMessagesFromLength());
+                int index = rand.nextInt(3);
+                
+                this.myThesi = index;
+                System.out.println("thesi topix pou mphke: " + index);
+                topics.get(index).addUser(new ProfileName(clientUsername), this);
+                System.out.println(topics.get(index).getTopicName());
+                this.bufferedWriter.write(topics.get(index).getMessagesFromLength());
                 this.bufferedWriter.newLine();
                 this.bufferedWriter.flush();
-                for(UserTopic user: topics.get(this.indexForTopic).getUsers()){
+                for(UserTopic user: topics.get(index).getUsers()){
                     user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
                     user.clientHandler.bufferedWriter.newLine();
                     user.clientHandler.bufferedWriter.flush();
                 }
 
->>>>>>> Stashed changes
             }catch (IOException e){
                 removeClient();
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -140,8 +141,47 @@ public class Broker{
 
         }
 
-        private void acceptConnection(ClientHandler client){
-            this.registerClient.add(client);
+
+        public void readyForPull() throws IOException {
+            for (Topic topic : topics) {
+                for (UserTopic user : topic.getUsers()) {
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        if(index < topic.messageLength()){
+                            user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
+                            user.clientHandler.bufferedWriter.newLine();
+                            user.clientHandler.bufferedWriter.flush();
+                            user.setLastMessageHasUserRead(topic.messageLength());
+                        }
+                    } catch (NullPointerException | IOException e) {
+                        removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
+
+            // testing
+
+            for (Topic topicc : topics) {
+                System.out.println(topicc.getTopicName() + ":");
+                for (UserTopic user : topicc.getUsers()) {
+                    System.out.println("\t" + user.getUserName());
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        if(index < topicc.messageLength()){
+                            user.clientHandler.bufferedWriter.write(topicc.getMessagesFromLength(index));
+                            user.clientHandler.bufferedWriter.newLine();
+                            user.clientHandler.bufferedWriter.flush();
+                            user.setLastMessageHasUserRead(topicc.messageLength());
+                        }
+                    } catch (NullPointerException | IOException e) {
+                        removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
+
+            // testing
         }
 
         public void broadcastMessage(String messageToSend) {
@@ -158,6 +198,7 @@ public class Broker{
                 }
             }
         }
+
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
             registerClient.remove(this);
@@ -169,17 +210,13 @@ public class Broker{
             while (clientSocket.isConnected()) {
                 try {
                     messageFromClient = bufferedReader.readLine();
-                    broadcastMessage(messageFromClient);
                     System.out.println("Server log: " + messageFromClient);
-<<<<<<< Updated upstream
-=======
 
                     String[] arrOfStr = messageFromClient.split(": ");
-                    String userid = topics.get(this.indexForTopic).getUserIDbyName(arrOfStr[0]);
-                    topics.get(this.indexForTopic).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    String userid = topics.get(myThesi).getUserIDbyName(arrOfStr[0]);
+                    topics.get(myThesi).addMessage(arrOfStr[1], userid, arrOfStr[0]);
                     readyForPull();
 
->>>>>>> Stashed changes
                 } catch (IOException e) {
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
