@@ -1,5 +1,11 @@
 package controller;
 
+<<<<<<< Updated upstream
+=======
+import model.ProfileName;
+import  java.util.Random;
+
+>>>>>>> Stashed changes
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,11 +21,23 @@ public class Broker{
     private int port;
     private String ip;
     public ServerSocket socket;
+<<<<<<< Updated upstream
+=======
+    private static ArrayList<Topic> topics = new ArrayList<Topic>();
+    private static int thesi;
+>>>>>>> Stashed changes
 
     Broker(String ip, int port){
         this.port = port;
         this.ip = ip;
+<<<<<<< Updated upstream
         calculateKeys();
+=======
+//        calculateKeys();
+        topics.add(new Topic("DS-A"));
+        topics.add(new Topic("DS-B"));
+        topics.add(new Topic("DS-C"));
+>>>>>>> Stashed changes
     }
     public void disconnect() {
         try {
@@ -77,9 +95,14 @@ public class Broker{
         broker.connect();
     }
 
+<<<<<<< Updated upstream
 
 
     private static class ClientHandler implements Runnable {
+=======
+    public static class ClientHandler implements Runnable {
+        private int indexForTopic;
+>>>>>>> Stashed changes
         private Socket clientSocket;
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
@@ -91,8 +114,25 @@ public class Broker{
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
+<<<<<<< Updated upstream
                 acceptConnection(this);
                 this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
+=======
+                Random rand = new Random();
+
+                this.indexForTopic = rand.nextInt(3);
+
+                topics.get(this.indexForTopic).addUser(new ProfileName(clientUsername), this);
+                this.bufferedWriter.write(topics.get(this.indexForTopic).getMessagesFromLength());
+                this.bufferedWriter.newLine();
+                this.bufferedWriter.flush();
+                for(UserTopic user: topics.get(this.indexForTopic).getUsers()){
+                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
+                    user.clientHandler.bufferedWriter.newLine();
+                    user.clientHandler.bufferedWriter.flush();
+                }
+
+>>>>>>> Stashed changes
             }catch (IOException e){
                 removeClient();
                 closeEverything(socket, bufferedReader, bufferedWriter);
@@ -131,6 +171,15 @@ public class Broker{
                     messageFromClient = bufferedReader.readLine();
                     broadcastMessage(messageFromClient);
                     System.out.println("Server log: " + messageFromClient);
+<<<<<<< Updated upstream
+=======
+
+                    String[] arrOfStr = messageFromClient.split(": ");
+                    String userid = topics.get(this.indexForTopic).getUserIDbyName(arrOfStr[0]);
+                    topics.get(this.indexForTopic).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    readyForPull();
+
+>>>>>>> Stashed changes
                 } catch (IOException e) {
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
