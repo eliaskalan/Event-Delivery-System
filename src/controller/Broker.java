@@ -148,6 +148,7 @@ public class Broker{
             fos = new FileOutputStream(FILE_TO_RECEIVED);
             bos = new BufferedOutputStream(fos);
             bytesRead = is.read(mybytearray,0,mybytearray.length);
+
             current = bytesRead;
             do {
                 bytesRead =
@@ -157,26 +158,21 @@ public class Broker{
 
             bos.write(mybytearray, 0 , current);
             bos.flush();
+            System.out.println(current);
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
+
+
         }
 
-
-
-
-
-
-
-
-
         public void run() {
-
                 try {
                     acceptImage();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
 
-            }
+                }
+
         }
     }
 }

@@ -81,13 +81,13 @@ public class Publisher{
                     closeEverything(socket, bufferedWriter);
                 }
             }
-    public final static String FILE_TO_SEND = "C:\\Users\\elias\\Documents\\new.jpg";
+        public final static String FILE_TO_SEND = "C:\\Users\\elias\\Documents\\new.jpg";
     public void sendImage() throws IOException, InterruptedException {
         FileInputStream fis = null;
         BufferedInputStream bis = null;
         OutputStream os = null;
 
-        while (true) {
+
             System.out.println("Waiting...");
             try {
                 System.out.println("Accepted connection : " + socket);
@@ -96,7 +96,8 @@ public class Publisher{
                 fis = new FileInputStream(myFile);
                 bis = new BufferedInputStream(fis);
                 bis.read(mybytearray, 0, mybytearray.length);
-                os = socket.getOutputStream();
+                os = socket.
+                        getOutputStream();
                 System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
                 os.write(mybytearray, 0, mybytearray.length);
                 os.flush();
@@ -108,7 +109,7 @@ public class Publisher{
             }
 
 
-        }
+
 
     }
 }
