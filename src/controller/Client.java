@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
+
 
 public class Client{
     Consumer consumer;
@@ -27,10 +30,15 @@ public class Client{
         String username = scanner.nextLine();
         Client client  = new Client("localhost", 12345, username);
         try{
-            client.consumer.listenForMessage();
-            client.publisher.sendMessage();
+            //client.consumer.listenForMessage();
+            //client.publisher.sendMessage();
+
+            client.publisher.sendImage();
+
         }catch (IOException e){
             System.out.println("Try again!");
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         System.out.println("Welcome " + username);

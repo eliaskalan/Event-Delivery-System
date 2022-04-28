@@ -2,10 +2,7 @@ package controller;
 
 import model.Value;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 
 import static utils.socketMethods.closeEverything;
