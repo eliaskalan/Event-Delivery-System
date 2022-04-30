@@ -98,7 +98,6 @@ public class Broker {
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect();
-//        System.out.println(broker.calculateKeys("DSasgstbxfgbxfA")); // TODO results must be 0, 1, or 2 because of %3. For some values is -1
     }
 
     public static class ClientHandler implements Runnable {
