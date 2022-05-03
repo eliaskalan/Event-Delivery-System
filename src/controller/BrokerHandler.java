@@ -3,7 +3,10 @@ package controller;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BrokerHandler extends Thread{
     private Socket connection;
@@ -24,6 +27,44 @@ public class BrokerHandler extends Thread{
             System.out.println("We have an error");
         }
     }
+
+    public synchronized void updateInfoTable(){
+
+    }
+
+    public synchronized void updateId(){
+
+    }
+
+    public boolean checkClientExist(Client client){
+        for (Client clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
+            if(clientFromArray == client){ //ToDo check with id
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkBrokerExist(Address brokerAddress, HashMap<Address, ArrayList<String>> topicsAssociatedWithBrokers, HashMap<Address, BigInteger> hashingIDAssociatedWithBrokers){
+        if(topicsAssociatedWithBrokers != null){
+            for (Address address : topicsAssociatedWithBrokers.keySet()){
+                if (brokerAddress == address){ //Todo check with id
+                    return true;
+                }
+            }
+        }
+
+        if(hashingIDAssociatedWithBrokers != null){
+            for (Address address : hashingIDAssociatedWithBrokers.keySet()){
+                if (brokerAddress == address){ //Todo check with id
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
 
     @Override
     public void run(){
