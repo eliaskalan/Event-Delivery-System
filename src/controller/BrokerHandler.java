@@ -36,6 +36,10 @@ public class BrokerHandler extends Thread{
 
     }
 
+    public synchronized void updateDelete(){
+        
+    }
+
     public boolean checkClientExist(Client client){
         for (Client clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
             if(clientFromArray == client){ //ToDo check with id
