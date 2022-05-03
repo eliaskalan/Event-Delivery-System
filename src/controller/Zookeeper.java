@@ -2,6 +2,7 @@ package controller;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 
 public class Zookeeper {
     transient InfoTable infoTable;
@@ -16,7 +17,9 @@ public class Zookeeper {
             zookeeperServerSocket = new ServerSocket(zookeeperAddress.getPort(), 250);
             System.out.println("Zookeeper start");
             while (true){
-              //ToDo here i will have a zookeeper handler like ClientHandler in broker
+                Socket broker = zookeeperServerSocket.accept();
+                Thread brokerThread = new BrokerHandler(broker, this);
+                brokerThread.start();
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -27,6 +30,10 @@ public class Zookeeper {
                 e.printStackTrace();
             }
         }
+    }
+
+    public synchronized InfoTable getInfoTable(){
+        return  infoTable;
     }
 
     public static void main(String[] args) {
