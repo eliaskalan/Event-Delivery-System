@@ -1,5 +1,7 @@
 package controller;
 
+import model.ProfileName;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -11,9 +13,6 @@ import java.util.HashMap;
 public class BrokerHandler extends Thread{
     private Socket connection;
     private Zookeeper zookeeper;
-    private static final int UPDATE_INFOTABLE = 0;
-    private static final int UPDATE_ON_DELETE = 1;
-    private static final int UPDATE_ID = 2;
     ObjectOutputStream out = null;
     ObjectInputStream in = null;
     public BrokerHandler(Socket connection, Zookeeper zookeeper){
@@ -28,8 +27,9 @@ public class BrokerHandler extends Thread{
         }
     }
 
-    public synchronized void updateInfoTable(){
-
+    public synchronized void updateInfoTable() throws IOException {
+        out.writeObject("Server : Zookeeper -  Updating info table...");
+        out.flush();
     }
 
     public synchronized void updateId(){
@@ -40,9 +40,9 @@ public class BrokerHandler extends Thread{
         
     }
 
-    public boolean checkClientExist(Client client){
-        for (Client clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
-            if(clientFromArray.profileName.getUserId().equals(client.profileName.getUserId())){
+    public boolean checkClientExist(ProfileName client){
+        for (ProfileName clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
+            if(clientFromArray.getUserId().equals(client.getUserId())){
                 return true;
             }
         }
