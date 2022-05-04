@@ -15,13 +15,13 @@ import java.util.Scanner;
 import static utils.socketMethods.closeEverything;
 
 public class Publisher{
-    ProfileName profileName;
+
     private BufferedWriter bufferedWriter;
     private Socket socket;
-    Publisher(Socket socket, String profileName) throws IOException {
+    ProfileName profileName;
+    Publisher(Socket socket, ProfileName profileName) throws IOException {
         this.socket = socket;
-        this.profileName = new ProfileName(profileName);
-
+        this.profileName = profileName;
         try{
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {

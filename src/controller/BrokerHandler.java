@@ -42,7 +42,7 @@ public class BrokerHandler extends Thread{
 
     public boolean checkClientExist(Client client){
         for (Client clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
-            if(clientFromArray == client){ //ToDo check with id
+            if(clientFromArray.profileName.getUserId().equals(client.profileName.getUserId())){
                 return true;
             }
         }
@@ -52,7 +52,7 @@ public class BrokerHandler extends Thread{
     public boolean checkBrokerExist(Address brokerAddress, HashMap<Address, ArrayList<String>> topicsAssociatedWithBrokers, HashMap<Address, BigInteger> hashingIDAssociatedWithBrokers){
         if(topicsAssociatedWithBrokers != null){
             for (Address address : topicsAssociatedWithBrokers.keySet()){
-                if (brokerAddress == address){ //Todo check with id
+                if (brokerAddress.equals(address)){
                     return true;
                 }
             }
@@ -60,7 +60,7 @@ public class BrokerHandler extends Thread{
 
         if(hashingIDAssociatedWithBrokers != null){
             for (Address address : hashingIDAssociatedWithBrokers.keySet()){
-                if (brokerAddress == address){ //Todo check with id
+                if (brokerAddress.equals(address)){
                     return true;
                 }
             }

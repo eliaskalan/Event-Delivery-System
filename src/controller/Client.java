@@ -1,5 +1,7 @@
 package controller;
 
+import model.ProfileName;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
@@ -8,12 +10,14 @@ import java.util.Scanner;
 public class Client{
     Consumer consumer;
     Publisher publisher;
+    ProfileName profileName;
     private Socket socket;
     Client(String ip, int port, String name) throws IOException {
         try{
             this.socket = new Socket(ip, port);
             this.consumer = new Consumer(socket);
-            this.publisher = new Publisher(socket, name);
+            this.profileName = new ProfileName(name);
+            this.publisher = new Publisher(socket, profileName);
         }catch (IOException e){
             System.out.println("There was a problem in the connection of the client");
         }
