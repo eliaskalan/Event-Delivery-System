@@ -14,7 +14,7 @@ public class MultimediaFile {
     String frameWidth;
     String frameHeight;
     byte[] multimediaFileChunk;
-
+    public static final String FOLDER_SAVE = "/home/giannistolou/Downloads/";
     public void MultimediaFile()
     {
         System.out.println(SAVED_FILES_PATH+"Despicable Me 2 - Trailer (HD) - YouTube.mp4");

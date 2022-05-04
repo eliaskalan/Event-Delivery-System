@@ -32,7 +32,6 @@ public class Publisher{
             closeEverything(socket, bufferedWriter);
         }
 
-
     }
 
     public ArrayList<Value> generateChunks(MultimediaFile multFile) {
@@ -81,7 +80,7 @@ public class Publisher{
                     closeEverything(socket, bufferedWriter);
                 }
             }
-        public final static String FILE_TO_SEND = "C:\\Users\\elias\\Documents\\new.jpg";
+        public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "194648_full-hd-1080p-autumn-wallpapers-hd-desktop-backgrounds-1920x1080_1920x1080_h.jpg";
     public void sendImage() throws IOException, InterruptedException {
         FileInputStream fis = null;
         BufferedInputStream bis = null;

@@ -1,5 +1,7 @@
 package controller;
 
+import model.MultimediaFile;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -94,6 +96,7 @@ public class Broker{
         public ClientHandler(Socket socket) throws IOException {
 
             this.clientSocket = socket;
+
             try{
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
@@ -132,7 +135,7 @@ public class Broker{
         }
 
         public final static String
-                FILE_TO_RECEIVED = "C:\\Users\\elias\\Documents\\source-downloaded.jpg";
+                FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "new.jpg";
         public final static int FILE_SIZE = 6022386;
 
         public void acceptImage() throws IOException {
@@ -141,7 +144,6 @@ public class Broker{
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;
             System.out.println("Connecting...");
-
             // receive file
             byte [] mybytearray  = new byte [FILE_SIZE];
             InputStream is = clientSocket.getInputStream();
@@ -161,8 +163,6 @@ public class Broker{
             System.out.println(current);
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
-
-
         }
 
         public void run() {
