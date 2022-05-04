@@ -47,6 +47,7 @@ public class InfoTable {
     public void addTopicOnBroker(Broker broker, Topic topic){
         ArrayList<Topic> topics = this.brokersConnectionWithTopics.get(broker);
         this.brokersConnectionWithTopics.put(broker, topics);
+        broker.addTopic(topic);
     }
 
     public void addTopics(Topic topic){

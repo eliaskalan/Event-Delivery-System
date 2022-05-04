@@ -34,6 +34,9 @@ public class Broker {
         }
     }
 
+    public void  addTopic(Topic topic){
+        topics.add(topic);
+    }
     public void connect() {
         try {
             socket = new ServerSocket(port, 10);

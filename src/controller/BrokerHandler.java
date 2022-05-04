@@ -27,19 +27,6 @@ public class BrokerHandler extends Thread{
         }
     }
 
-    public synchronized void updateInfoTable() throws IOException {
-        out.writeObject("Server : Zookeeper -  Updating info table...");
-        out.flush();
-    }
-
-    public synchronized void updateId(){
-
-    }
-
-    public synchronized void updateDelete(){
-        
-    }
-
     public boolean checkClientExist(ProfileName client){
         for (ProfileName clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
             if(clientFromArray.getUserId().equals(client.getUserId())){
