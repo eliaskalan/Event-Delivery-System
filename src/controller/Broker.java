@@ -97,16 +97,16 @@ public class Broker{
 
             this.clientSocket = socket;
 
-            try{
-                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                this.clientUsername = bufferedReader.readLine();
-                acceptConnection(this);
-                this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
-            }catch (IOException e){
-                removeClient();
-                closeEverything(socket, bufferedReader, bufferedWriter);
-            }
+//            try{
+//                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//                this.clientUsername = bufferedReader.readLine();
+//                acceptConnection(this);
+//                this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
+//            }catch (IOException e){
+//                removeClient();
+//                closeEverything(socket, bufferedReader, bufferedWriter);
+//            }
 
         }
 
