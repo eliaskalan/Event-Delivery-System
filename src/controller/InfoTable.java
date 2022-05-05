@@ -14,34 +14,34 @@ public class InfoTable {
 
     private ArrayList<BrokerInZookeeper> availableBrokers = new ArrayList<BrokerInZookeeper>();
 
-    private HashMap<BrokerInZookeeper, ArrayList<Topic>> brokersConnectionWithTopics = new HashMap<>();
-    private HashMap<ProfileName, ArrayList<Topic>> availableClients = new HashMap<>();
-    private ArrayList<Topic> availableTopics = new ArrayList<>();
+    private HashMap<BrokerInZookeeper, ArrayList<TopicZookeeper>> brokersConnectionWithTopics = new HashMap<>();
+    private HashMap<ProfileName, ArrayList<TopicZookeeper>> availableClients = new HashMap<>();
+    private ArrayList<TopicZookeeper> availableTopics = new ArrayList<>();
 
 
-    public synchronized ArrayList<Topic> getAvailableTopics() {
+    public synchronized ArrayList<TopicZookeeper> getAvailableTopics() {
         return availableTopics;
     }
 
-    public synchronized HashMap<ProfileName, ArrayList<Topic>> getAvailableClients() {
+    public synchronized HashMap<ProfileName, ArrayList<TopicZookeeper>> getAvailableClients() {
         return availableClients;
     }
 
     public void addAvailableClients(ProfileName profile) {
-        availableClients.put(profile, new ArrayList<Topic>());
+        availableClients.put(profile, new ArrayList<TopicZookeeper>());
     }
 
     public ArrayList<BrokerInZookeeper> getAvailableBrokers(){
         return this.availableBrokers;
     }
 
-    public void addAvailableClients(ProfileName profile, Topic topic) {
-        ArrayList<Topic> topics = this.availableClients.get(profile);
+    public void addAvailableClients(ProfileName profile, TopicZookeeper topic) {
+        ArrayList<TopicZookeeper> topics = this.availableClients.get(profile);
         topics.add(topic);
         availableClients.put(profile, topics);
     }
 
-    public void availableTopics(Topic topic) {
+    public void availableTopics(TopicZookeeper topic) {
         this.availableTopics.add(topic);
     }
 
@@ -49,8 +49,8 @@ public class InfoTable {
         this.availableBrokers.add(broker);
         this.brokersConnectionWithTopics.put(broker, null);
     }
-    public void addTopicOnBroker(BrokerInZookeeper broker, Topic topic){
-        ArrayList<Topic> topics = this.brokersConnectionWithTopics.get(broker);
+    public void addTopicOnBroker(BrokerInZookeeper broker, TopicZookeeper topic){
+        ArrayList<TopicZookeeper> topics = this.brokersConnectionWithTopics.get(broker);
         if(topics == null){
             topics = new ArrayList<>();
         }
@@ -62,7 +62,7 @@ public class InfoTable {
         return this.availableBrokers.size();
     }
 
-    public void addTopics(Topic topic){
+    public void addTopics(TopicZookeeper topic){
         int hash = this.availableTopics.size() % this.availableBrokers.size();
         this.availableTopics.add(topic);
         addTopicOnBroker(this.availableBrokers.get(hash), topic);
@@ -71,7 +71,7 @@ public class InfoTable {
     public void printInfo(){
         for(BrokerInZookeeper a : this.getAvailableBrokers()){
             System.out.println("Broker: " + a.id + " Has topics");
-            for(Topic t : this.brokersConnectionWithTopics.get(a)){
+            for(TopicZookeeper t : this.brokersConnectionWithTopics.get(a)){
                     System.out.println("- " + t.getTopicName());
             }
             System.out.println("-----------------");

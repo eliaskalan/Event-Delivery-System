@@ -13,9 +13,9 @@ public class Client{
     Publisher publisher;
     ProfileName profileName;
     private Socket socket;
-    Client(String ip, int port, String name) throws IOException {
+    Client(Address address, String name) throws IOException {
         try{
-            this.socket = new Socket(ip, port);
+            this.socket = new Socket(address.getIp(), address.getPort());
             this.consumer = new Consumer(socket);
             this.profileName = new ProfileName(name);
             this.publisher = new Publisher(socket, profileName);
@@ -30,7 +30,7 @@ public class Client{
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
-        Client client  = new Client("localhost", Config.BROKER_1.getPort(), username);
+        Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
         /*System.out.println("Give Topic");
         String str_topic = scanner.nextLine();
         Topic topic = new Topic(str_topic);*/

@@ -9,19 +9,22 @@ import java.net.Socket;
 public class Zookeeper {
     transient InfoTable infoTable;
     ServerSocket zookeeperServerSocket;
+    ServerSocket zookeeperClients;
     public Zookeeper(){
         infoTable = new InfoTable();
     }
 
     public void connect(){
         try{
-            zookeeperServerSocket = new ServerSocket(Config.ZOOKEEPER.getPort(), 10);
+            zookeeperServerSocket = new ServerSocket(Config.ZOOKEEPER_BROKERS.getPort(), 10);
+            zookeeperClients = new ServerSocket(Config.ZOOKEEPER_CLIENTS.getPort(), 10);
+
             System.out.println("Zookeeper start");
             while (true){
                 Socket connection = zookeeperServerSocket.accept();
-                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
+                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable, zookeeperClients);
                 new Thread(brokerThread).start();
-                if(infoTable.numOfBrokers() >= 3){
+                if(infoTable.numOfBrokers() == 3){
                     infoTable.addTopics(Config.TOPIC_1);
                     infoTable.addTopics(Config.TOPIC_2);
                     infoTable.addTopics(Config.TOPIC_3);
@@ -43,6 +46,7 @@ public class Zookeeper {
         }
     }
 
+
     public synchronized InfoTable getInfoTable(){
         return  infoTable;
     }
@@ -50,6 +54,7 @@ public class Zookeeper {
     public static void main(String[] args) {
         Zookeeper zookeeper = new Zookeeper();
         zookeeper.connect();
+        System.out.println("hello");
     }
 
 }

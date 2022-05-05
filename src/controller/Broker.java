@@ -24,7 +24,7 @@ public class Broker {
     Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
-        zookeeperSocket  = new Socket(Config.ZOOKEEPER.getIp(), Config.ZOOKEEPER.getPort());
+        zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
 //        calculateKeys();
        topics.add(new Topic("DS"));
     }
