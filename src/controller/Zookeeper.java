@@ -19,7 +19,7 @@ public class Zookeeper {
             System.out.println("Zookeeper start");
             while (true){
                 Socket connection = zookeeperServerSocket.accept();
-                BrokerHandler brokerThread = new BrokerHandler(connection);
+                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
                 new Thread(brokerThread).start();
             }
         }catch (IOException e){

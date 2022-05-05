@@ -14,12 +14,11 @@ import java.util.HashMap;
 public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
-    transient InfoTable infoTable;
 
-    public BrokerHandler(Socket connection){
+    public BrokerHandler(Socket connection, InfoTable infoTable){
         this.connection = connection;
-        System.out.println(this.connection.getLocalPort());
-        System.out.println(this.connection.getLocalAddress());
+        BrokerInZookeeper bz = new BrokerInZookeeper(this.connection.getLocalAddress(), this.connection.getLocalPort());
+        infoTable.addBroker(bz);
     }
 
     public boolean checkClientExist(ProfileName client){

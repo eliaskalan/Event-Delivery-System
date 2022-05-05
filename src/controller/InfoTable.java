@@ -53,6 +53,10 @@ public class InfoTable {
         this.brokersConnectionWithTopics.put(broker, topics);
     }
 
+    public int numOfBrokers(){
+        return this.availableBrokers.size();
+    }
+
     public void addTopics(Topic topic){
         this.availableTopics.add(topic);
        //addTopicOnBroker(getBrokerWithTheMinTopics(), topic);
