@@ -29,16 +29,16 @@ public class Client{
         System.out.println("What is your name?");
         String username = scanner.nextLine();
         Client client  = new Client("localhost", 12345, username);
-        try{
+
             //client.consumer.listenForMessage();
             //client.publisher.sendMessage();
-
+            client.consumer.listenForImages();
+        try {
             client.publisher.sendImage();
-
-
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
 
         System.out.println("Welcome " + username);
     }

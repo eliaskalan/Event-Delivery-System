@@ -18,15 +18,16 @@ import java.util.Scanner;
 
 import static utils.socketMethods.closeEverything;
 
-public class Publisher{
+public class Publisher {
     ProfileName profileName;
     private BufferedWriter bufferedWriter;
     private Socket socket;
+
     Publisher(Socket socket, String profileName) throws IOException {
         this.socket = socket;
         this.profileName = new ProfileName(profileName);
-        try{
-            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        try {
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedWriter);
@@ -37,6 +38,7 @@ public class Publisher{
     public ArrayList<Value> generateChunks(MultimediaFile multFile) {
         return null;
     }
+
     public void getBrokerList() {
 
     }
@@ -63,33 +65,40 @@ public class Publisher{
 //    }
 
     public void sendMessage() throws IOException {
-                try {
-                    bufferedWriter.write(this.profileName.getProfileName());
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+        try {
+            bufferedWriter.write(this.profileName.getProfileName());
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
 
-                    Scanner scanner = new Scanner(System.in);
-                    while (socket.isConnected()) {
-                        String messageToSend = scanner.nextLine();
-                        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
+            Scanner scanner = new Scanner(System.in);
+            while (socket.isConnected()) {
+                String messageToSend = scanner.nextLine();
+                bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
+                bufferedWriter.newLine();
+                bufferedWriter.flush();
 
-                    }
-                } catch (IOException e) {
-                    closeEverything(socket, bufferedWriter);
-                }
             }
-        public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "194648_full-hd-1080p-autumn-wallpapers-hd-desktop-backgrounds-1920x1080_1920x1080_h.jpg";
+        } catch (IOException e) {
+            closeEverything(socket, bufferedWriter);
+        }
+    }
+
+    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
+
     public void sendImage() throws IOException, InterruptedException {
-        FileInputStream fis = null;
-        BufferedInputStream bis = null;
-        OutputStream os = null;
+        Scanner scanner = new Scanner(System.in);
+        int a = Integer.parseInt(scanner.nextLine());
+        if (a == 1) {
+            a=2;
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            OutputStream os = null;
 
 
             System.out.println("Waiting...");
-            try {
-                System.out.println("Accepted connection : " + socket);
+
+            System.out.println("Accepted connection : " + socket);
+
                 File myFile = new File(FILE_TO_SEND);
                 byte[] mybytearray = new byte[(int) myFile.length()];
                 fis = new FileInputStream(myFile);
@@ -101,14 +110,9 @@ public class Publisher{
                 os.write(mybytearray, 0, mybytearray.length);
                 os.flush();
                 System.out.println("Done.");
-            } finally {
-                if (bis != null) bis.close();
-                if (os != null) os.close();
-                if (socket != null) socket.close();
-            }
 
 
 
-
+        }
     }
 }

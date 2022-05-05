@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 
 import static java.lang.Thread.sleep;
 import static utils.socketMethods.closeEverything;
@@ -135,7 +136,7 @@ public class Broker{
         }
 
         public final static String
-                FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "new.jpg";
+                FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "BrokersFile\\" + "new_download.jpeg";
         public final static int FILE_SIZE = 6022386;
 
         public void acceptImage() throws IOException {
@@ -164,10 +165,42 @@ public class Broker{
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
         }
+        public void broadcastImage() {
+            for (ClientHandler client : registerClient) {
+                if (!client.clientUsername.equals(clientUsername)) {
+                    FileInputStream fis = null;
+                    BufferedInputStream bis = null;
+                    OutputStream os = null;
+
+
+                    System.out.println("Waiting...");
+                    try {
+                        System.out.println("Accepted connection : " + clientSocket);
+                        File myFile = new File(FILE_TO_RECEIVED);
+                        byte[] mybytearray = new byte[(int) myFile.length()];
+                        fis = new FileInputStream(myFile);
+                        bis = new BufferedInputStream(fis);
+                        bis.read(mybytearray, 0, mybytearray.length);
+                        os = clientSocket.
+                                getOutputStream();
+                        System.out.println("Sending " + FILE_TO_RECEIVED + "(" + mybytearray.length + " bytes)");
+                        os.write(mybytearray, 0, mybytearray.length);
+                        os.flush();
+                        System.out.println("Done.");
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
 
         public void run() {
                 try {
                     acceptImage();
+                    broadcastImage();
+
                 } catch (IOException e) {
                     throw new RuntimeException(e);
 
