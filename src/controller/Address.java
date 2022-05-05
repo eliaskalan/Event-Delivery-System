@@ -13,6 +13,11 @@ public class Address implements Serializable {
         this.ip = ip;
     }
 
+    public Address(int port){
+        this.ip = "localhost";
+        this.port = port;
+    }
+
     public int getPort() {
         return port;
     }

@@ -1,6 +1,7 @@
 package controller;
 
 import model.ProfileName;
+import utils.Config;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -29,12 +30,12 @@ public class Client{
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
-        Client client  = new Client("localhost", 12345, username);
+        Client client  = new Client("localhost", Config.BROKER_1.getPort(), username);
         /*System.out.println("Give Topic");
         String str_topic = scanner.nextLine();
         Topic topic = new Topic(str_topic);*/
         try{
-            client.consumer.listenForMessage();
+           // client.consumer.listenForMessage();
             client.publisher.sendMessage();
         }catch (IOException e){
             System.out.println("Try again!");

@@ -1,9 +1,8 @@
 package model;
-import model.Config.*;
 import java.io.*;
 import java.util.Arrays;
 
-import static model.Config.SAVED_FILES_PATH;
+import static utils.Config.SAVED_FILES_PATH;
 
 public class MultimediaFile {
     String multimediaFileName;

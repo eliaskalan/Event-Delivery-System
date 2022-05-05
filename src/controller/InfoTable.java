@@ -30,6 +30,10 @@ public class InfoTable {
         availableClients.put(profile, new ArrayList<Topic>());
     }
 
+    public ArrayList<Broker> getAvailableBrokers(){
+        return this.availableBrokers;
+    }
+
     public void addAvailableClients(ProfileName profile, Topic topic) {
         ArrayList<Topic> topics = this.availableClients.get(profile);
         topics.add(topic);
@@ -52,7 +56,17 @@ public class InfoTable {
 
     public void addTopics(Topic topic){
         this.availableTopics.add(topic);
-        //ToDo hashing and add in an broker
+       addTopicOnBroker(getBrokerWithTheMinTopics(), topic);
     }
 
+    public Broker getBrokerWithTheMinTopics(){
+        //ToDo maybe later we must have hashing for topics.
+        Broker min = this.availableBrokers.get(0);
+        for(int i = 1; i < availableBrokers.size(); i++){
+            if(min.getTopicsLength() > this.availableBrokers.get(i).getTopicsLength()){
+                min = this.availableBrokers.get(i);
+            }
+        }
+        return min;
+    }
 }

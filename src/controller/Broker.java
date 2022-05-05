@@ -23,9 +23,18 @@ public class Broker {
         this.port = port;
         this.ip = ip;
 //        calculateKeys();
-        topics.add(new Topic("DS"));
+       // topics.add(new Topic("DS"));
     }
 
+    Broker(Address address){
+        this.port = address.getPort();
+        this.ip = address.getIp();
+        connect();
+    }
+
+    public int getTopicsLength(){
+        return topics.size();
+    }
     public void disconnect() {
         try {
             socket.close();
@@ -40,7 +49,7 @@ public class Broker {
     public void connect() {
         try {
             socket = new ServerSocket(port, 10);
-            System.out.println("Broker is live!");
+            System.out.println("Broker ip: " + this.ip + " port" + this.port + " is live");
             while (true) {
                 Socket connection = socket.accept();
                 ClientHandler clientSock = new ClientHandler(connection);
@@ -53,6 +62,16 @@ public class Broker {
         }
     }
 
+    public String status(){
+        if(socket == null){
+            return  "Dead";
+        }
+        if(!socket.isClosed()){
+            return "Broker ip: " + this.ip + " port" + this.port + " is live";
+        }else{
+            return "Broker ip: " + this.ip + " port" + this.port + " is dead";
+        }
+    }
     public int getPort() {
         return this.port;
     }

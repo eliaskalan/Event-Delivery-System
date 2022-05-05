@@ -1,6 +1,7 @@
 package controller;
 
 import model.ProfileName;
+import utils.Config;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,14 +11,14 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BrokerHandler extends Thread{
+public class BrokerHandler extends Thread implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
+    transient InfoTable infoTable;
     ObjectOutputStream out = null;
     ObjectInputStream in = null;
-    public BrokerHandler(Socket connection, Zookeeper zookeeper){
+    public BrokerHandler(Socket connection){
         this.connection = connection;
-        this.zookeeper = zookeeper;
         try{
             out = new ObjectOutputStream(connection.getOutputStream());
             in = new ObjectInputStream(connection.getInputStream());
@@ -57,8 +58,12 @@ public class BrokerHandler extends Thread{
 
 
 
-    @Override
     public void run(){
         System.out.println("Server: Zookeeper connect with broker in port: " + connection.getPort());
+        while (this.connection.isConnected()){
+            infoTable.addBroker(new Broker(Config.BROKER_1));
+            infoTable.addBroker(new Broker(Config.BROKER_2));
+            infoTable.addBroker(new Broker(Config.BROKER_3));
+        }
     }
 }

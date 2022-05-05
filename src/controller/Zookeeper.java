@@ -1,12 +1,13 @@
 package controller;
 
+import utils.Config;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Zookeeper {
     transient InfoTable infoTable;
-    Address zookeeperAddress = new Address("localhost", 12345);
     ServerSocket zookeeperServerSocket = null;
     public Zookeeper(){
         infoTable = new InfoTable();
@@ -14,18 +15,19 @@ public class Zookeeper {
 
     public void start(){
         try{
-            zookeeperServerSocket = new ServerSocket(zookeeperAddress.getPort(), 250);
+            zookeeperServerSocket = new ServerSocket(Config.ZOOKEEPER.getPort(), 250);
             System.out.println("Zookeeper start");
             while (true){
                 Socket broker = zookeeperServerSocket.accept();
-                Thread brokerThread = new BrokerHandler(broker, this);
-                brokerThread.start();
+                BrokerHandler brokerThread = new BrokerHandler(broker);
+                new Thread(brokerThread).start();
             }
         }catch (IOException e){
             e.printStackTrace();
         }finally {
             try{
                 zookeeperServerSocket.close();
+                System.out.println("close zookeeper");
             } catch (IOException e){
                 e.printStackTrace();
             }
