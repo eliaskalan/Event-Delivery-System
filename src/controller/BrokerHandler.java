@@ -15,8 +15,7 @@ import java.util.HashMap;
 public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
-    private ServerSocket zookeeperClients;
-    public BrokerHandler(Socket connection, InfoTable infoTable, ServerSocket zookeeperClients){
+    public BrokerHandler(Socket connection, InfoTable infoTable){
         this.connection = connection;
         BrokerInZookeeper bz = new BrokerInZookeeper(this.connection.getLocalAddress(), this.connection.getLocalPort());
         infoTable.addBroker(bz);

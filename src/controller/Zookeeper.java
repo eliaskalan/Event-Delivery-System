@@ -22,7 +22,7 @@ public class Zookeeper {
             System.out.println("Zookeeper start");
             while (true){
                 Socket connection = zookeeperServerSocket.accept();
-                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable, zookeeperClients);
+                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
                 new Thread(brokerThread).start();
                 if(infoTable.numOfBrokers() == 3){
                     infoTable.addTopics(Config.TOPIC_1);
