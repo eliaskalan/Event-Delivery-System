@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 // Important https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html
+
 public class InfoTable {
 
     private ArrayList<BrokerInZookeeper> availableBrokers = new ArrayList<BrokerInZookeeper>();
@@ -58,7 +59,8 @@ public class InfoTable {
     }
 
     public void addTopics(Topic topic){
+        int hash = this.availableTopics.size() % this.availableBrokers.size();
         this.availableTopics.add(topic);
-       //addTopicOnBroker(getBrokerWithTheMinTopics(), topic);
+        addTopicOnBroker(this.availableBrokers.get(hash), topic);
     }
 }
