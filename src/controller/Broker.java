@@ -78,11 +78,6 @@ public class Broker {
         return this.ip;
     }
 
-    public static void main(String[] args) throws IOException {
-        Broker broker = new Broker(Config.BROKER_3);
-        broker.connect();
-    }
-
     public static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader bufferedReader;

@@ -51,6 +51,10 @@ public class InfoTable {
     }
     public void addTopicOnBroker(BrokerInZookeeper broker, Topic topic){
         ArrayList<Topic> topics = this.brokersConnectionWithTopics.get(broker);
+        if(topics == null){
+            topics = new ArrayList<>();
+        }
+        topics.add(topic);
         this.brokersConnectionWithTopics.put(broker, topics);
     }
 
@@ -62,5 +66,15 @@ public class InfoTable {
         int hash = this.availableTopics.size() % this.availableBrokers.size();
         this.availableTopics.add(topic);
         addTopicOnBroker(this.availableBrokers.get(hash), topic);
+    }
+
+    public void printInfo(){
+        for(BrokerInZookeeper a : this.getAvailableBrokers()){
+            System.out.println("Broker: " + a.id + " Has topics");
+            for(Topic t : this.brokersConnectionWithTopics.get(a)){
+                    System.out.println("- " + t.getTopicName());
+            }
+            System.out.println("-----------------");
+        }
     }
 }
