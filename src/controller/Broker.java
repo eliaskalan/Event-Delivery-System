@@ -1,6 +1,7 @@
 package controller;
 
 import model.ProfileName;
+import utils.Config;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -17,20 +18,17 @@ public class Broker {
     private int port;
     private String ip;
     public ServerSocket socket;
+    private Socket zookeeperSocket;
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
 
-    Broker(String ip, int port) {
-        this.port = port;
-        this.ip = ip;
-//        calculateKeys();
-       // topics.add(new Topic("DS"));
-    }
-
-    Broker(Address address){
+    Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
-        connect();
+        zookeeperSocket  = new Socket(Config.ZOOKEEPER.getIp(), Config.ZOOKEEPER.getPort());
+//        calculateKeys();
+       topics.add(new Topic("DS"));
     }
+
 
     public int getTopicsLength(){
         return topics.size();
@@ -80,45 +78,8 @@ public class Broker {
         return this.ip;
     }
 
-    public int calculateKeys(String topicname) {
-        //Todo we want to return the hash key, compare variables or update an array?
-        try {
-            String hashtext1, hashtext2;
-
-            //  hashing MD5
-            MessageDigest md1 = MessageDigest.getInstance("MD5");
-            MessageDigest md2 = MessageDigest.getInstance("MD5");
-            //Todo we want also to add ip
-
-            byte[] messageDigest1 = md1.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
-            byte[] messageDigest2 = md2.digest(topicname.getBytes());
-
-            BigInteger no1 = new BigInteger(1, messageDigest1);
-            hashtext1 = no1.toString(16);
-            BigInteger no2 = new BigInteger(1, messageDigest2);
-            hashtext2 = no2.toString(16);
-
-            while (hashtext1.length() < 32) {
-                hashtext1 = "0" + hashtext1;
-            }
-            while (hashtext2.length() < 32) {
-                hashtext2 = "0" + hashtext2;
-            }
-
-            String hashText = hashtext1 + hashtext2;
-
-//            this.hash =  hashText.hashCode();
-
-            return (hashText.hashCode()) % 3;
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
-
     public static void main(String[] args) throws IOException {
-        Broker broker = new Broker("localhost", 12345);
+        Broker broker = new Broker(Config.BROKER_3);
         broker.connect();
     }
 

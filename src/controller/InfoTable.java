@@ -11,9 +11,9 @@ import java.util.HashMap;
 // Important https://docs.oracle.com/javase/tutorial/essential/concurrency/syncmeth.html
 public class InfoTable {
 
-    private ArrayList<Broker> availableBrokers = new ArrayList<Broker>();
+    private ArrayList<BrokerInZookeeper> availableBrokers = new ArrayList<BrokerInZookeeper>();
 
-    private HashMap<Broker, ArrayList<Topic>> brokersConnectionWithTopics = new HashMap<>();
+    private HashMap<BrokerInZookeeper, ArrayList<Topic>> brokersConnectionWithTopics = new HashMap<>();
     private HashMap<ProfileName, ArrayList<Topic>> availableClients = new HashMap<>();
     private ArrayList<Topic> availableTopics = new ArrayList<>();
 
@@ -30,7 +30,7 @@ public class InfoTable {
         availableClients.put(profile, new ArrayList<Topic>());
     }
 
-    public ArrayList<Broker> getAvailableBrokers(){
+    public ArrayList<BrokerInZookeeper> getAvailableBrokers(){
         return this.availableBrokers;
     }
 
@@ -44,29 +44,17 @@ public class InfoTable {
         this.availableTopics.add(topic);
     }
 
-    public void addBroker(Broker broker){
+    public void addBroker(BrokerInZookeeper broker){
         this.availableBrokers.add(broker);
         this.brokersConnectionWithTopics.put(broker, null);
     }
-    public void addTopicOnBroker(Broker broker, Topic topic){
+    public void addTopicOnBroker(BrokerInZookeeper broker, Topic topic){
         ArrayList<Topic> topics = this.brokersConnectionWithTopics.get(broker);
         this.brokersConnectionWithTopics.put(broker, topics);
-        broker.addTopic(topic);
     }
 
     public void addTopics(Topic topic){
         this.availableTopics.add(topic);
-       addTopicOnBroker(getBrokerWithTheMinTopics(), topic);
-    }
-
-    public Broker getBrokerWithTheMinTopics(){
-        //ToDo maybe later we must have hashing for topics.
-        Broker min = this.availableBrokers.get(0);
-        for(int i = 1; i < availableBrokers.size(); i++){
-            if(min.getTopicsLength() > this.availableBrokers.get(i).getTopicsLength()){
-                min = this.availableBrokers.get(i);
-            }
-        }
-        return min;
+       //addTopicOnBroker(getBrokerWithTheMinTopics(), topic);
     }
 }

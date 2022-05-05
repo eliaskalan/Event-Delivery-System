@@ -8,18 +8,18 @@ import java.net.Socket;
 
 public class Zookeeper {
     transient InfoTable infoTable;
-    ServerSocket zookeeperServerSocket = null;
+    ServerSocket zookeeperServerSocket;
     public Zookeeper(){
         infoTable = new InfoTable();
     }
 
-    public void start(){
+    public void connect(){
         try{
-            zookeeperServerSocket = new ServerSocket(Config.ZOOKEEPER.getPort(), 250);
+            zookeeperServerSocket = new ServerSocket(Config.ZOOKEEPER.getPort(), 10);
             System.out.println("Zookeeper start");
             while (true){
-                Socket broker = zookeeperServerSocket.accept();
-                BrokerHandler brokerThread = new BrokerHandler(broker);
+                Socket connection = zookeeperServerSocket.accept();
+                BrokerHandler brokerThread = new BrokerHandler(connection);
                 new Thread(brokerThread).start();
             }
         }catch (IOException e){
@@ -40,7 +40,7 @@ public class Zookeeper {
 
     public static void main(String[] args) {
         Zookeeper zookeeper = new Zookeeper();
-        zookeeper.start();
+        zookeeper.connect();
     }
 
 }

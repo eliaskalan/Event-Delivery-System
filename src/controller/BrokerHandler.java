@@ -11,21 +11,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class BrokerHandler extends Thread implements Runnable{
+public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
     transient InfoTable infoTable;
-    ObjectOutputStream out = null;
-    ObjectInputStream in = null;
+
     public BrokerHandler(Socket connection){
         this.connection = connection;
-        try{
-            out = new ObjectOutputStream(connection.getOutputStream());
-            in = new ObjectInputStream(connection.getInputStream());
-        }catch (IOException e){
-            e.printStackTrace();
-            System.out.println("We have an error");
-        }
+        System.out.println(this.connection.getLocalPort());
+        System.out.println(this.connection.getLocalAddress());
     }
 
     public boolean checkClientExist(ProfileName client){
@@ -60,10 +54,5 @@ public class BrokerHandler extends Thread implements Runnable{
 
     public void run(){
         System.out.println("Server: Zookeeper connect with broker in port: " + connection.getPort());
-        while (this.connection.isConnected()){
-            infoTable.addBroker(new Broker(Config.BROKER_1));
-            infoTable.addBroker(new Broker(Config.BROKER_2));
-            infoTable.addBroker(new Broker(Config.BROKER_3));
-        }
     }
 }
