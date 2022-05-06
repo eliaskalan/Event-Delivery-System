@@ -30,17 +30,20 @@ public class Client{
         String username = scanner.nextLine();
         Client client  = new Client("localhost", 12345, username);
 
-            //client.consumer.listenForMessage();
-            //client.publisher.sendMessage();
-            client.consumer.listenForImages();
-        try {
-            client.publisher.sendImage();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        try{
+            //Images 
+            //client.consumer.listenForImages();
+            //client.publisher.sendImage();
+
+            //Messages
+            client.consumer.listenForMessage();
+            client.publisher.sendMessage();
+        }catch (IOException e){
+            System.out.println("Try again!");
         }
 
 
         System.out.println("Welcome " + username);
-    }
+        {}
 
 }

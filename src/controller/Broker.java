@@ -4,6 +4,8 @@ import model.MultimediaFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import model.ProfileName;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,17 +19,20 @@ import java.util.Scanner;
 import static java.lang.Thread.sleep;
 import static utils.socketMethods.closeEverything;
 
-public class Broker{
+public class Broker {
     String hash;
     private int port;
     private String ip;
     public ServerSocket socket;
+    private static ArrayList<Topic> topics = new ArrayList<Topic>();
 
-    Broker(String ip, int port){
+    Broker(String ip, int port) {
         this.port = port;
         this.ip = ip;
-        calculateKeys();
+//        calculateKeys();
+        topics.add(new Topic("DS"));
     }
+
     public void disconnect() {
         try {
             socket.close();
@@ -35,6 +40,7 @@ public class Broker{
             ioException.printStackTrace();
         }
     }
+
     public void connect() {
         try {
             socket = new ServerSocket(port, 10);
@@ -51,42 +57,58 @@ public class Broker{
         }
     }
 
-    public int getPort(){
+    public int getPort() {
         return this.port;
     }
 
-    public String getIp(){
+    public String getIp() {
         return this.ip;
     }
 
-    public void calculateKeys() {
+    public int calculateKeys(String topicname) {
         //Todo we want to return the hash key, compare variables or update an array?
         try {
-            //  hashing MD5
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            //Todo we want also to add ip
-            byte[] messageDigest = md.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
+            String hashtext1, hashtext2;
 
-            BigInteger no = new BigInteger(1, messageDigest);
-            String hashtext = no.toString(16);
-            while (hashtext.length() < 32) {
-                hashtext = "0" + hashtext;
+            //  hashing MD5
+            MessageDigest md1 = MessageDigest.getInstance("MD5");
+            MessageDigest md2 = MessageDigest.getInstance("MD5");
+            //Todo we want also to add ip
+
+            byte[] messageDigest1 = md1.digest((Integer.toString(this.getPort()) + this.getIp()).getBytes());
+            byte[] messageDigest2 = md2.digest(topicname.getBytes());
+
+            BigInteger no1 = new BigInteger(1, messageDigest1);
+            hashtext1 = no1.toString(16);
+            BigInteger no2 = new BigInteger(1, messageDigest2);
+            hashtext2 = no2.toString(16);
+
+            while (hashtext1.length() < 32) {
+                hashtext1 = "0" + hashtext1;
             }
-            this.hash =  hashtext;
-        }
-        catch (NoSuchAlgorithmException e) {
+            while (hashtext2.length() < 32) {
+                hashtext2 = "0" + hashtext2;
+            }
+
+            String hashText = hashtext1 + hashtext2;
+
+//            this.hash =  hashText.hashCode();
+
+            return (hashText.hashCode()) % 3;
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
+
+
     public static void main(String[] args) throws IOException {
         Broker broker = new Broker("localhost", 12345);
         broker.connect();
+//        System.out.println(broker.calculateKeys("DSasgstbxfgbxfA")); // TODO results must be 0, 1, or 2 because of %3. For some values is -1
     }
 
-
-
-    private static class ClientHandler implements Runnable {
+    public static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
@@ -97,22 +119,45 @@ public class Broker{
         public ClientHandler(Socket socket) throws IOException {
 
             this.clientSocket = socket;
+            try{
+                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                this.clientUsername = bufferedReader.readLine();
+                topics.get(0).addUser(new ProfileName(clientUsername), this);
+                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
+                this.bufferedWriter.newLine();
+                this.bufferedWriter.flush();
+                for(UserTopic user: topics.get(0).getUsers()){
+                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
+                    user.clientHandler.bufferedWriter.newLine();
+                    user.clientHandler.bufferedWriter.flush();
+                }
 
-//            try{
-//                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-//                this.clientUsername = bufferedReader.readLine();
-//                acceptConnection(this);
-//                this.broadcastMessage("SERVER: " + clientUsername + " has entered the chat!");
-//            }catch (IOException e){
-//                removeClient();
-//                closeEverything(socket, bufferedReader, bufferedWriter);
-//            }
+            }catch (IOException e){
+                removeClient();
+                closeEverything(socket, bufferedReader, bufferedWriter);
+            }
 
         }
 
-        private void acceptConnection(ClientHandler client){
-            this.registerClient.add(client);
+
+        public void readyForPull() throws IOException {
+            for (Topic topic : topics) {
+                for (UserTopic user : topic.getUsers()) {
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        if(index < topic.messageLength()){
+                            user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
+                            user.clientHandler.bufferedWriter.newLine();
+                            user.clientHandler.bufferedWriter.flush();
+                            user.setLastMessageHasUserRead(topic.messageLength());
+                        }
+                    } catch (NullPointerException | IOException e) {
+                        removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
         }
 
         public void broadcastMessage(String messageToSend) {
@@ -129,6 +174,7 @@ public class Broker{
                 }
             }
         }
+
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
             registerClient.remove(this);
@@ -198,8 +244,19 @@ public class Broker{
 
         public void run() {
                 try {
-                    acceptImage();
-                    broadcastImage();
+                    //Images 
+                    
+                    // acceptImage();
+                    // broadcastImage();
+
+                    // Messages
+                    messageFromClient = bufferedReader.readLine();
+                    System.out.println("Server log: " + messageFromClient);
+
+                    String[] arrOfStr = messageFromClient.split(": ");
+                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
+                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    readyForPull();
 
                 } catch (IOException e) {
                     throw new RuntimeException(e);
