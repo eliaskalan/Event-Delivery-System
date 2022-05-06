@@ -1,16 +1,23 @@
 package controller;
 
+import model.MultimediaFile;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import model.ProfileName;
 import utils.Config;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Scanner;
 
+import static java.lang.Thread.sleep;
 import static utils.socketMethods.closeEverything;
 
 public class Broker {
@@ -83,8 +90,11 @@ public class Broker {
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
         private String clientUsername;
+
+
         public static ArrayList<ClientHandler> registerClient = new ArrayList<>();
         public ClientHandler(Socket socket) throws IOException {
+
             this.clientSocket = socket;
             try{
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -148,10 +158,77 @@ public class Broker {
             broadcastMessage("SERVER:" + this.clientUsername + "has left the chat!");
         }
 
+        public final static String
+                FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "BrokersFile\\" + "new_download.jpeg";
+        public final static int FILE_SIZE = 6022386;
+
+        public void acceptImage() throws IOException {
+            int bytesRead;
+            int current = 0;
+            FileOutputStream fos = null;
+            BufferedOutputStream bos = null;
+            System.out.println("Connecting...");
+            // receive file
+            byte [] mybytearray  = new byte [FILE_SIZE];
+            InputStream is = clientSocket.getInputStream();
+            fos = new FileOutputStream(FILE_TO_RECEIVED);
+            bos = new BufferedOutputStream(fos);
+            bytesRead = is.read(mybytearray,0,mybytearray.length);
+
+            current = bytesRead;
+            do {
+                bytesRead =
+                        is.read(mybytearray, current, (mybytearray.length-current));
+                if(bytesRead >= 0) current += bytesRead;
+            } while(bytesRead > -1);
+
+            bos.write(mybytearray, 0 , current);
+            bos.flush();
+            System.out.println(current);
+            System.out.println("File " + FILE_TO_RECEIVED
+                    + " downloaded (" + current + " bytes read)");
+        }
+        public void broadcastImage() {
+            for (ClientHandler client : registerClient) {
+                if (!client.clientUsername.equals(clientUsername)) {
+                    FileInputStream fis = null;
+                    BufferedInputStream bis = null;
+                    OutputStream os = null;
+
+
+                    System.out.println("Waiting...");
+                    try {
+                        System.out.println("Accepted connection : " + clientSocket);
+                        File myFile = new File(FILE_TO_RECEIVED);
+                        byte[] mybytearray = new byte[(int) myFile.length()];
+                        fis = new FileInputStream(myFile);
+                        bis = new BufferedInputStream(fis);
+                        bis.read(mybytearray, 0, mybytearray.length);
+                        os = clientSocket.
+                                getOutputStream();
+                        System.out.println("Sending " + FILE_TO_RECEIVED + "(" + mybytearray.length + " bytes)");
+                        os.write(mybytearray, 0, mybytearray.length);
+                        os.flush();
+                        System.out.println("Done.");
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+
         public void run() {
             String messageFromClient;
             while (clientSocket.isConnected()) {
                 try {
+                    //Images
+
+                    // acceptImage();
+                    // broadcastImage();
+
+                    // Messages
                     messageFromClient = bufferedReader.readLine();
                     System.out.println("Server log: " + messageFromClient);
 

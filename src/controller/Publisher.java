@@ -1,14 +1,18 @@
 package controller;
 
+
 import model.MultimediaFile;
 import model.ProfileName;
 import model.Value;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStreamWriter;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -19,6 +23,7 @@ public class Publisher{
     private BufferedWriter bufferedWriter;
     private Socket socket;
     ProfileName profileName;
+    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
     Publisher(Socket socket, ProfileName profileName) throws IOException {
         this.socket = socket;
         this.profileName = profileName;
@@ -28,28 +33,8 @@ public class Publisher{
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedWriter);
         }
-
-
     }
 
-    public ArrayList<Value> generateChunks(MultimediaFile multFile) {
-        return null;
-    }
-    public void getBrokerList() {
-
-    }
-
-    public Broker hashTopic(String hash) {
-        return null;
-    }
-
-    public void notifyBrokersNewMessage(String notify) {
-
-    }
-
-    public void notifyFailure(Broker notify) {
-
-    }
 
 //    public void push(String a, Value b) {
 //        //ToDo string a is hash code?
@@ -61,7 +46,7 @@ public class Publisher{
 //        }
 //    }
 
-    public void sendMessage() throws IOException {
+    public void sendMessage(){
                 try {
                     bufferedWriter.write(this.profileName.getProfileName());
                     bufferedWriter.newLine();
@@ -78,5 +63,35 @@ public class Publisher{
                 } catch (IOException e) {
                     closeEverything(socket, bufferedWriter);
                 }
-            }
+
     }
+
+
+
+    public void sendImage() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        int a = Integer.parseInt(scanner.nextLine());
+        if (a == 1) {
+            a=2;
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            OutputStream os = null;
+
+
+            System.out.println("Waiting...");
+
+            System.out.println("Accepted connection : " + socket);
+
+                File myFile = new File(FILE_TO_SEND);
+                byte[] mybytearray = new byte[(int) myFile.length()];
+                fis = new FileInputStream(myFile);
+                bis = new BufferedInputStream(fis);
+                bis.read(mybytearray, 0, mybytearray.length);
+                os = socket.getOutputStream();
+                System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
+                os.write(mybytearray, 0, mybytearray.length);
+                os.flush();
+                System.out.println("Done.");
+        }
+    }
+}

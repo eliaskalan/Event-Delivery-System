@@ -7,8 +7,11 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.Scanner;
 
+import static java.lang.Thread.currentThread;
+import static java.lang.Thread.sleep;
 
-public class Client{
+
+public class Client {
     Consumer consumer;
     Publisher publisher;
     ProfileName profileName;
@@ -25,23 +28,22 @@ public class Client{
     }
 
 
-
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
         Client client  = new Client(Config.BROKER_1, username);
-        /*System.out.println("Give Topic");
-        String str_topic = scanner.nextLine();
-        Topic topic = new Topic(str_topic);*/
-        try{
-            client.consumer.listenForMessage();
-            client.publisher.sendMessage();
-        }catch (IOException e){
-            System.out.println("Try again!");
-        }
+
+        //Images
+        //client.consumer.listenForImages();
+        //client.publisher.sendImage();
+
+        //Messages
+        client.consumer.listenForMessage();
+        client.publisher.sendMessage();
+
 
         System.out.println("Welcome " + username);
-    }
 
+    }
 }
