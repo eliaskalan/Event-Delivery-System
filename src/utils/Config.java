@@ -26,7 +26,7 @@ public class Config {
     public static String calculateKeys(Address address) {
         try {
             String hashtext;
-            String name = address.getIp() + Integer.toString(address.getPort());
+            String name = address.getIp() + address.getPort();
             //  hashing MD5
             MessageDigest md1 = MessageDigest.getInstance("MD5");
 

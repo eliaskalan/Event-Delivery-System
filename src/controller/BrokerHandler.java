@@ -17,7 +17,7 @@ public class BrokerHandler implements Runnable{
     private Zookeeper zookeeper;
     public BrokerHandler(Socket connection, InfoTable infoTable){
         this.connection = connection;
-        BrokerInZookeeper bz = new BrokerInZookeeper(this.connection.getLocalAddress(), this.connection.getLocalPort());
+        BrokerInZookeeper bz = new BrokerInZookeeper(this.connection.getInetAddress(), this.connection.getPort());
         infoTable.addBroker(bz);
     }
 

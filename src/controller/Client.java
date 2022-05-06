@@ -30,12 +30,12 @@ public class Client{
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
-        Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
+        Client client  = new Client(Config.BROKER_1, username);
         /*System.out.println("Give Topic");
         String str_topic = scanner.nextLine();
         Topic topic = new Topic(str_topic);*/
         try{
-           // client.consumer.listenForMessage();
+            client.consumer.listenForMessage();
             client.publisher.sendMessage();
         }catch (IOException e){
             System.out.println("Try again!");
