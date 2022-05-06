@@ -243,9 +243,11 @@ public class Broker {
         }
 
         public void run() {
+            String messageFromClient;
+            while (clientSocket.isConnected()) {
                 try {
-                    //Images 
-                    
+                    //Images
+
                     // acceptImage();
                     // broadcastImage();
 
@@ -259,10 +261,10 @@ public class Broker {
                     readyForPull();
 
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
-
+                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    break;
                 }
-
+            }
         }
     }
 }
