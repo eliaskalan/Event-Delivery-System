@@ -1,7 +1,6 @@
 package controller;
 
 import model.ProfileName;
-
 import java.util.ArrayList;
 
 public class Topic {
