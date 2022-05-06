@@ -20,6 +20,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Publisher {
     ProfileName profileName;
+    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
     private BufferedWriter bufferedWriter;
     private Socket socket;
 
@@ -27,34 +28,14 @@ public class Publisher {
         this.socket = socket;
         this.profileName = new ProfileName(profileName);
 
-        try{
-            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        try {
+            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedWriter);
         }
-
     }
 
-    public ArrayList<Value> generateChunks(MultimediaFile multFile) {
-        return null;
-    }
-
-    public void getBrokerList() {
-
-    }
-
-    public Broker hashTopic(String hash) {
-        return null;
-    }
-
-    public void notifyBrokersNewMessage(String notify) {
-
-    }
-
-    public void notifyFailure(Broker notify) {
-
-    }
 
 //    public void push(String a, Value b) {
 //        //ToDo string a is hash code?
@@ -66,7 +47,7 @@ public class Publisher {
 //        }
 //    }
 
-    public void sendMessage() throws IOException {
+    public void sendMessage(){
                 try {
                     bufferedWriter.write(this.profileName.getProfileName());
                     bufferedWriter.newLine();
@@ -83,15 +64,12 @@ public class Publisher {
                 } catch (IOException e) {
                     closeEverything(socket, bufferedWriter);
                 }
-            }
-        } catch (IOException e) {
-            closeEverything(socket, bufferedWriter);
-        }
+
     }
 
-    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
 
-    public void sendImage() throws IOException, InterruptedException {
+
+    public void sendImage() throws IOException {
         Scanner scanner = new Scanner(System.in);
         int a = Integer.parseInt(scanner.nextLine());
         if (a == 1) {
@@ -110,15 +88,11 @@ public class Publisher {
                 fis = new FileInputStream(myFile);
                 bis = new BufferedInputStream(fis);
                 bis.read(mybytearray, 0, mybytearray.length);
-                os = socket.
-                        getOutputStream();
+                os = socket.getOutputStream();
                 System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
                 os.write(mybytearray, 0, mybytearray.length);
                 os.flush();
                 System.out.println("Done.");
-
-
-
         }
     }
 }

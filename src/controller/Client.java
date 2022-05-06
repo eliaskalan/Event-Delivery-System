@@ -8,42 +8,38 @@ import static java.lang.Thread.currentThread;
 import static java.lang.Thread.sleep;
 
 
-public class Client{
+public class Client {
     Consumer consumer;
     Publisher publisher;
     private Socket socket;
+
     Client(String ip, int port, String name) throws IOException {
-        try{
+        try {
             this.socket = new Socket(ip, port);
             this.consumer = new Consumer(socket);
             this.publisher = new Publisher(socket, name);
-        }catch (IOException e){
+        } catch (IOException e) {
             System.out.println("There was a problem in the connection of the client");
         }
     }
-
 
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
-        Client client  = new Client("localhost", 12345, username);
+        Client client = new Client("localhost", 12345, username);
 
-        try{
-            //Images 
-            //client.consumer.listenForImages();
-            //client.publisher.sendImage();
+        //Images
+        //client.consumer.listenForImages();
+        //client.publisher.sendImage();
 
-            //Messages
-            client.consumer.listenForMessage();
-            client.publisher.sendMessage();
-        }catch (IOException e){
-            System.out.println("Try again!");
-        }
+        //Messages
+        client.consumer.listenForMessage();
+        client.publisher.sendMessage();
 
 
         System.out.println("Welcome " + username);
-        {}
 
+    }
 }
