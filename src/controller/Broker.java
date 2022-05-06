@@ -119,24 +119,24 @@ public class Broker {
         public ClientHandler(Socket socket) throws IOException {
 
             this.clientSocket = socket;
-            try{
-                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                this.clientUsername = bufferedReader.readLine();
-                topics.get(0).addUser(new ProfileName(clientUsername), this);
-                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
-                this.bufferedWriter.newLine();
-                this.bufferedWriter.flush();
-                for(UserTopic user: topics.get(0).getUsers()){
-                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
-                    user.clientHandler.bufferedWriter.newLine();
-                    user.clientHandler.bufferedWriter.flush();
-                }
-
-            }catch (IOException e){
-                removeClient();
-                closeEverything(socket, bufferedReader, bufferedWriter);
-            }
+//            try{
+//                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//                this.clientUsername = bufferedReader.readLine();
+//                topics.get(0).addUser(new ProfileName(clientUsername), this);
+//                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
+//                this.bufferedWriter.newLine();
+//                this.bufferedWriter.flush();
+//                for(UserTopic user: topics.get(0).getUsers()){
+//                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
+//                    user.clientHandler.bufferedWriter.newLine();
+//                    user.clientHandler.bufferedWriter.flush();
+//                }
+//
+//            }catch (IOException e){
+//                removeClient();
+//                closeEverything(socket, bufferedReader, bufferedWriter);
+//            }
 
         }
 
@@ -199,10 +199,21 @@ public class Broker {
             bytesRead = is.read(mybytearray,0,mybytearray.length);
 
             current = bytesRead;
+            System.out.println(current);
+
+
             do {
-                bytesRead =
-                        is.read(mybytearray, current, (mybytearray.length-current));
-                if(bytesRead >= 0) current += bytesRead;
+                System.out.println(current);
+                try{
+                    bytesRead =is.read(mybytearray, current, (mybytearray.length-current));
+
+                if(bytesRead >= 0) {
+                    current += bytesRead;
+                }
+                }catch (IOException e)
+                {
+                    bytesRead=-1;
+                }
             } while(bytesRead > -1);
 
             bos.write(mybytearray, 0 , current);
@@ -227,8 +238,7 @@ public class Broker {
                         fis = new FileInputStream(myFile);
                         bis = new BufferedInputStream(fis);
                         bis.read(mybytearray, 0, mybytearray.length);
-                        os = clientSocket.
-                                getOutputStream();
+                        os = clientSocket.getOutputStream();
                         System.out.println("Sending " + FILE_TO_RECEIVED + "(" + mybytearray.length + " bytes)");
                         os.write(mybytearray, 0, mybytearray.length);
                         os.flush();
@@ -244,25 +254,25 @@ public class Broker {
 
         public void run() {
             String messageFromClient;
-            while (clientSocket.isConnected()) {
+            if (clientSocket.isConnected()) {
                 try {
                     //Images
 
-                    // acceptImage();
-                    // broadcastImage();
+                    acceptImage();
+                    //broadcastImage();
 
                     // Messages
-                    messageFromClient = bufferedReader.readLine();
-                    System.out.println("Server log: " + messageFromClient);
-
-                    String[] arrOfStr = messageFromClient.split(": ");
-                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
-                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
-                    readyForPull();
+//                    messageFromClient = bufferedReader.readLine();
+//                    System.out.println("Server log: " + messageFromClient);
+//
+//                    String[] arrOfStr = messageFromClient.split(": ");
+//                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
+//                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+//                    readyForPull();
 
                 } catch (IOException e) {
-                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
-                    break;
+                    //closeEverything(clientSocket, bufferedReader, bufferedWriter);
+
                 }
             }
         }

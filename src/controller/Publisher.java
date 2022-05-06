@@ -70,29 +70,26 @@ public class Publisher {
 
 
     public void sendImage() throws IOException {
-        Scanner scanner = new Scanner(System.in);
-        int a = Integer.parseInt(scanner.nextLine());
-        if (a == 1) {
-            a=2;
-            FileInputStream fis = null;
-            BufferedInputStream bis = null;
-            OutputStream os = null;
+
+        FileInputStream fis = null;
+        BufferedInputStream bis = null;
+        OutputStream os = null;
 
 
-            System.out.println("Waiting...");
+        if(socket.isConnected()) {
 
-            System.out.println("Accepted connection : " + socket);
+            File myFile = new File(FILE_TO_SEND);
+            byte[] mybytearray = new byte[(int) myFile.length()];
+            fis = new FileInputStream(myFile);
+            bis = new BufferedInputStream(fis);
+            bis.read(mybytearray, 0, mybytearray.length);
+            os = socket.getOutputStream();
 
-                File myFile = new File(FILE_TO_SEND);
-                byte[] mybytearray = new byte[(int) myFile.length()];
-                fis = new FileInputStream(myFile);
-                bis = new BufferedInputStream(fis);
-                bis.read(mybytearray, 0, mybytearray.length);
-                os = socket.getOutputStream();
-                System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
-                os.write(mybytearray, 0, mybytearray.length);
-                os.flush();
-                System.out.println("Done.");
+            System.out.println("Sending " + FILE_TO_SEND + "(" + mybytearray.length + " bytes)");
+            os.write(mybytearray, 0, mybytearray.length);
+            os.flush();
+            System.out.println("Done.");
         }
+
     }
 }
