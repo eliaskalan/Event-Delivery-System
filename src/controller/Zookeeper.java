@@ -34,7 +34,6 @@ public class Zookeeper {
                         infoTable.addTopics(Config.TOPIC_6);
                         System.out.println("start send");
                         for(BrokerInZookeeper broker: infoTable.getAvailableBrokers()){
-                            System.out.println(infoTable.getTopicsFromBroker(broker).size());
                             broker.brokerHandlers.sendTopics(infoTable.getTopicsFromBroker(broker));
                         }
                        // infoTable.printInfo();
