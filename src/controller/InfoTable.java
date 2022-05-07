@@ -16,6 +16,8 @@ public class InfoTable {
 
     private HashMap<BrokerInZookeeper, ArrayList<TopicZookeeper>> brokersConnectionWithTopics = new HashMap<>();
     private HashMap<ProfileName, ArrayList<TopicZookeeper>> availableClients = new HashMap<>();
+
+    private ArrayList<ProfileName> clients = new ArrayList<>();
     private ArrayList<TopicZookeeper> availableTopics = new ArrayList<>();
 
 
@@ -45,6 +47,10 @@ public class InfoTable {
         this.availableTopics.add(topic);
     }
 
+    public void addClients(ProfileName user){
+        this.clients.add(user);
+    }
+
     public void addBroker(BrokerInZookeeper broker){
         this.availableBrokers.add(broker);
         this.brokersConnectionWithTopics.put(broker, null);
@@ -62,6 +68,10 @@ public class InfoTable {
         return this.availableBrokers.size();
     }
 
+    public int numOfUsers(){
+        return this.availableClients.size();
+    }
+
     public void addTopics(TopicZookeeper topic){
         int hash = this.availableTopics.size() % this.availableBrokers.size();
         this.availableTopics.add(topic);
@@ -75,6 +85,10 @@ public class InfoTable {
                     System.out.println("- " + t.getTopicName());
             }
             System.out.println("-----------------");
+
+            for(ProfileName user :this.clients){
+                System.out.println(user.getProfileName());
+            }
         }
     }
 }

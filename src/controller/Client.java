@@ -32,7 +32,7 @@ public class Client {
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
-        Client client  = new Client(Config.BROKER_1, username);
+        Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
 
         //Images
         //client.consumer.listenForImages();

@@ -21,16 +21,22 @@ public class Zookeeper {
 
             System.out.println("Zookeeper start");
             while (true){
-                Socket connection = zookeeperServerSocket.accept();
-                BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
-                new Thread(brokerThread).start();
-                if(infoTable.numOfBrokers() == 3){
-                    infoTable.addTopics(Config.TOPIC_1);
-                    infoTable.addTopics(Config.TOPIC_2);
-                    infoTable.addTopics(Config.TOPIC_3);
-                    infoTable.addTopics(Config.TOPIC_4);
-                    infoTable.addTopics(Config.TOPIC_5);
-                    infoTable.addTopics(Config.TOPIC_6);
+                if(infoTable.numOfBrokers() < 3){
+                    Socket connection = zookeeperServerSocket.accept();
+                    BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
+                    new Thread(brokerThread).start();
+                    if(infoTable.numOfBrokers() == 3){
+                        infoTable.addTopics(Config.TOPIC_1);
+                        infoTable.addTopics(Config.TOPIC_2);
+                        infoTable.addTopics(Config.TOPIC_3);
+                        infoTable.addTopics(Config.TOPIC_4);
+                        infoTable.addTopics(Config.TOPIC_5);
+                        infoTable.addTopics(Config.TOPIC_6);
+                        infoTable.printInfo();
+                    }
+                }else{
+                    Socket connection = zookeeperClients.accept();
+                    ZookeeperClientHandler zookeeperClientHandler = new ZookeeperClientHandler(connection, infoTable);
                     infoTable.printInfo();
                 }
             }
