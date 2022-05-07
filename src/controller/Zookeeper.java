@@ -34,6 +34,7 @@ public class Zookeeper {
                         infoTable.addTopics(Config.TOPIC_6);
                         System.out.println("start send");
                         for(BrokerInZookeeper broker: infoTable.getAvailableBrokers()){
+                            System.out.println(infoTable.getTopicsFromBroker(broker).size());
                             broker.brokerHandlers.sendTopics(infoTable.getTopicsFromBroker(broker));
                         }
                        // infoTable.printInfo();
@@ -65,7 +66,6 @@ public class Zookeeper {
     public static void main(String[] args) {
         Zookeeper zookeeper = new Zookeeper();
         zookeeper.connect();
-        System.out.println("hello");
     }
 
 }
