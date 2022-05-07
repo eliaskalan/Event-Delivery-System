@@ -236,6 +236,8 @@ public class Broker {
             System.out.println(current);
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
+            String userid = topics.get(0).getUserIDbyName(clientUsername);
+            topics.get(0).addMessage(FILE_TO_RECEIVED,userid,clientUsername,"image");
         }
 
 

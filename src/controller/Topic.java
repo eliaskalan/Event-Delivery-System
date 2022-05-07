@@ -25,8 +25,8 @@ public class Topic {
         return totalMessage;
     }
 
-    public void addMessage(String context, String userId, String userName){
-        messages.add(new Message(context, userId, userName));
+    public void addMessage(String context, String userId, String userName,String type){
+        messages.add(new Message(context, userId, userName,type));
         for(UserTopic user : this.users){
             if(user.getUserId().equals(userId)){
                 user.setLastMessageHasUserRead(user.lastMessageHasUserRead + 1);
