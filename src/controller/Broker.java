@@ -34,13 +34,8 @@ public class Broker {
         this.ip = address.getIp();
         zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
         this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(zookeeperSocket.getOutputStream()));
-        bufferedWriter.write(this.ip);
-        bufferedWriter.newLine();
-        bufferedWriter.flush();
-        System.out.println(this.port);
-        bufferedWriter.write(this.port);
-        bufferedWriter.newLine();
-        bufferedWriter.flush();
+        Config.sendAMessage(this.bufferedWriter, this.ip);
+        Config.sendAMessage(this.bufferedWriter, this.port);
         this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
         int topicsNum = Integer.parseInt( this.bufferedReader.readLine());
         for(int i=0; i < topicsNum; i++){
@@ -121,13 +116,9 @@ public class Broker {
                 System.out.println(topicName);
                 int topicPosition = getPositionOfTopic(topicName);
                 topics.get(topicPosition).addUser(new ProfileName(clientUsername, userId), this);
-                this.bufferedWriter.write( topics.get(topicPosition).getMessagesFromLength());
-                this.bufferedWriter.newLine();
-                this.bufferedWriter.flush();
+                Config.sendAMessage(bufferedWriter, topics.get(topicPosition).getMessagesFromLength());
                 for(UserTopic user: topics.get(topicPosition).getUsers()){
-                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
-                    user.clientHandler.bufferedWriter.newLine();
-                    user.clientHandler.bufferedWriter.flush();
+                    Config.sendAMessage(user.clientHandler.bufferedWriter, "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
                 }
 
             }catch (IOException e){
@@ -153,12 +144,10 @@ public class Broker {
                     try {
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
-                            user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
-                            user.clientHandler.bufferedWriter.newLine();
-                            user.clientHandler.bufferedWriter.flush();
+                            Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             user.setLastMessageHasUserRead(topic.messageLength());
                         }
-                    } catch (NullPointerException | IOException e) {
+                    } catch (NullPointerException e) {
                         removeClient();
                         closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
@@ -170,10 +159,8 @@ public class Broker {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
                     try {
-                        client.bufferedWriter.write(messageToSend);
-                        client.bufferedWriter.newLine();
-                        client.bufferedWriter.flush();
-                    } catch (NullPointerException | IOException e) {
+                        Config.sendAMessage(client.bufferedWriter, messageToSend);
+                    } catch (NullPointerException  e) {
                         removeClient();
                         closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
@@ -252,7 +239,6 @@ public class Broker {
             for(Topic topic : topics){
                 for(UserTopic user : topic.getUsers()){
                     if(user.getUserId().equals(id)){
-                        System.out.println("id" + id);
                         return i;
                     }
                 }

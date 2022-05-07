@@ -65,7 +65,18 @@ public class Config {
             bufferedWriter.newLine();
             bufferedWriter.flush();
         } catch (IOException e) {
-            System.out.println("Problem to send message");
+            System.out.println("Problem to send message ~ string");
+            throw new RuntimeException(e);
+        }
+
+    }
+    public static void sendAMessage(BufferedWriter bufferedWriter, int message){
+        try {
+            bufferedWriter.write(message);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            System.out.println("Problem to send message ~ int");
             throw new RuntimeException(e);
         }
 

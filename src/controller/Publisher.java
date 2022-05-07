@@ -37,29 +37,12 @@ public class Publisher{
     }
 
 
-//    public void push(String a, Value b) {
-//        //ToDo string a is hash code?
-//        try{
-//            out.writeChars(a);
-//            out.flush();
-//        }catch (IOException ioException){
-//
-//        }
-//    }
-
     public void sendMessage(){
-                try {
-                    Scanner scanner = new Scanner(System.in);
-                    while (socket.isConnected()) {
-                        String messageToSend = scanner.nextLine();
-                        bufferedWriter.write(this.profileName.getUserId() + ": " + messageToSend);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
-                    }
-                } catch (IOException e) {
-                    closeEverything(socket, bufferedWriter);
-                }
-
+        Scanner scanner = new Scanner(System.in);
+        while (socket.isConnected()) {
+            String messageToSend = scanner.nextLine();
+            Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
+        }
     }
 
     public void sendOneTimeMessage(String messageToSend) throws IOException {

@@ -15,7 +15,6 @@ public class ZookeeperClientHandler implements Runnable{
         this.connection = connection;
         this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         this.infoTable = infoTable;
-
     }
 
     public void run(){

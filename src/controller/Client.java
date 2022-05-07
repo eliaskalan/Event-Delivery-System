@@ -57,7 +57,7 @@ public class Client {
         System.out.println("Complete set up");
         int portInt = Integer.parseInt(port);
         client  = new Client(new Address(ip, portInt), username);
-        
+
         client.publisher.sendOneTimeMessage(username);
         client.publisher.sendOneTimeMessage(client.profileName.getUserId());
         client.publisher.sendOneTimeMessage(topicName);
