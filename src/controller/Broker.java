@@ -161,11 +161,12 @@ public class Broker {
                 for (UserTopic user : topic.getUsers()) {
                     try {
                         int index = user.lastMessageHasUserRead;
-                        if(index < topic.messageLength()){
+                        while(index < topic.messageLength()){
                             user.clientHandler.bufferedWriter.write(topic.getMessagesFromLength(index));
                             user.clientHandler.bufferedWriter.newLine();
                             user.clientHandler.bufferedWriter.flush();
-                            user.setLastMessageHasUserRead(topic.messageLength());
+                            user.setLastMessageHasUserRead(index);
+                            index++;
                         }
                     } catch (NullPointerException | IOException e) {
                         removeClient();
@@ -257,7 +258,7 @@ public class Broker {
 
         public void run() {
 
-            if (clientSocket.isConnected()) {
+            while (clientSocket.isConnected()) {
                 try {
                     //Images
 
