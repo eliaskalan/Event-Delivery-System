@@ -51,6 +51,7 @@ public class Topic {
 
     public String getMessagesFromLength(int lastMessageHasRead){
         String message = "";
+
         for(int i = lastMessageHasRead; i < messages.size(); i++){
             Message messageObject = messages.get(i);
             message = message + "\n" + messageObject.getUserName() + ": " + messageObject.getMessage();

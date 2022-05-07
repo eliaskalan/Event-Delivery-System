@@ -33,11 +33,11 @@ public class Client {
 
         //Images
         //client.consumer.listenForImages();
-        client.publisher.sendImage();
+        //client.publisher.sendImage();
 
         //Messages
-        //client.consumer.listenForMessage();
-        //client.publisher.sendMessage();
+        client.consumer.listenForMessage();
+        client.publisher.sendMessage();
 
 
         System.out.println("Welcome " + username);

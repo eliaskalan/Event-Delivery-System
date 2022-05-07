@@ -176,6 +176,7 @@ public class Broker {
         }
 
 
+
         public void broadcastMessage(String messageToSend) {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
@@ -190,6 +191,7 @@ public class Broker {
                 }
             }
         }
+
 
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
@@ -238,28 +240,33 @@ public class Broker {
                     + " downloaded (" + current + " bytes read)");
             String userid = topics.get(0).getUserIDbyName(clientUsername);
             topics.get(0).addMessage(FILE_TO_RECEIVED,userid,clientUsername,"image");
+            readyForPull();
+        }
+        public void acceptMessage() throws IOException {
+            String messageFromClient;
+            messageFromClient = bufferedReader.readLine();
+            System.out.println("Server log: " + messageFromClient);
+
+            String[] arrOfStr = messageFromClient.split(": ");
+            String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
+            topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0],"message");
+            readyForPull();
+
         }
 
 
-
         public void run() {
-            String messageFromClient;
+
             if (clientSocket.isConnected()) {
                 try {
                     //Images
 
-                    acceptImage();
-
+                    //acceptImage();
                     //broadcastImage();
 
                     // Messages
-//                    messageFromClient = bufferedReader.readLine();
-//                    System.out.println("Server log: " + messageFromClient);
+                    acceptMessage();
 //
-//                    String[] arrOfStr = messageFromClient.split(": ");
-//                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
-//                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
-//                    readyForPull();
 
                 } catch (IOException e) {
                     //closeEverything(clientSocket, bufferedReader, bufferedWriter);
