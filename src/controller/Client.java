@@ -33,17 +33,26 @@ public class Client {
         System.out.println("What is your name?");
         String username = scanner.nextLine();
         Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
+        client.publisher.sendOneTimeMessage(username);
 
         //Images
         //client.consumer.listenForImages();
         //client.publisher.sendImage();
 
         //Messages
+
+        System.out.println("Welcome " + username);
+        System.out.println("Select the topic you want");
+        client.consumer.listenForMessageOneTime();
+        System.out.println("Select an id");
+        String id = scanner.nextLine();
+        System.out.println(id);
+        client.publisher.sendOneTimeMessage(id);
+        System.out.println("Complete set up");
         client.consumer.listenForMessage();
         client.publisher.sendMessage();
 
 
-        System.out.println("Welcome " + username);
 
     }
 }

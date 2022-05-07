@@ -37,6 +37,27 @@ public class Consumer{
             }
         }).start();
     }
+
+    public void listenForMessageOneTime(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String msgFromGroupChat;
+                boolean end = false;
+                while (!end) {
+                    try {
+                        msgFromGroupChat = bufferedReader.readLine();
+                        System.out.println(msgFromGroupChat);
+                        if(msgFromGroupChat == null){
+                            end = true;
+                        }
+                    } catch (IOException e) {
+                        closeEverything(socket, bufferedReader);
+                    }
+                }
+            }
+        }).start();
+    }
     public final static String
             FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
     public final static int FILE_SIZE = 6022386;

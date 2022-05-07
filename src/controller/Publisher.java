@@ -66,6 +66,12 @@ public class Publisher{
 
     }
 
+    public void sendOneTimeMessage(String messageToSend) throws IOException {
+        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
+
 
 
     public void sendImage() throws IOException {

@@ -32,13 +32,13 @@ public class Zookeeper {
                         infoTable.addTopics(Config.TOPIC_4);
                         infoTable.addTopics(Config.TOPIC_5);
                         infoTable.addTopics(Config.TOPIC_6);
-                        infoTable.printInfo();
+                       // infoTable.printInfo();
                     }
                 }else{
                     Socket connection = zookeeperClients.accept();
                     ZookeeperClientHandler zookeeperClientHandler = new ZookeeperClientHandler(connection, infoTable);
 
-                    infoTable.printInfo();
+                   // infoTable.printInfo();
                 }
             }
         }catch (IOException e){
