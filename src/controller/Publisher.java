@@ -20,6 +20,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Publisher {
     ProfileName profileName;
+    //TODO static name for the image must change
     public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
     private BufferedWriter bufferedWriter;
     private Socket socket;

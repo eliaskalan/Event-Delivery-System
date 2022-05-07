@@ -123,7 +123,7 @@ public class Broker {
 //                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 //                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 //                this.clientUsername = bufferedReader.readLine();
-//                topics.get(0).addUser(new ProfileName(clientUsername), this);
+//                  topics.get(0).addUser(new ProfileName(clientUsername), this);*/
 //                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
 //                this.bufferedWriter.newLine();
 //                this.bufferedWriter.flush();
@@ -160,6 +160,7 @@ public class Broker {
             }
         }
 
+
         public void broadcastMessage(String messageToSend) {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
@@ -180,7 +181,7 @@ public class Broker {
             registerClient.remove(this);
             broadcastMessage("SERVER:" + this.clientUsername + "has left the chat!");
         }
-
+        //TODO static name for the image must change
         public final static String
                 FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "BrokersFile\\" + "new_download.jpeg";
         public final static int FILE_SIZE = 6022386;
@@ -192,6 +193,7 @@ public class Broker {
             BufferedOutputStream bos = null;
             System.out.println("Connecting...");
             // receive file
+
             byte [] mybytearray  = new byte [FILE_SIZE];
             InputStream is = clientSocket.getInputStream();
             fos = new FileOutputStream(FILE_TO_RECEIVED);
@@ -222,35 +224,8 @@ public class Broker {
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
         }
-        public void broadcastImage() {
-            for (ClientHandler client : registerClient) {
-                if (!client.clientUsername.equals(clientUsername)) {
-                    FileInputStream fis = null;
-                    BufferedInputStream bis = null;
-                    OutputStream os = null;
 
 
-                    System.out.println("Waiting...");
-                    try {
-                        System.out.println("Accepted connection : " + clientSocket);
-                        File myFile = new File(FILE_TO_RECEIVED);
-                        byte[] mybytearray = new byte[(int) myFile.length()];
-                        fis = new FileInputStream(myFile);
-                        bis = new BufferedInputStream(fis);
-                        bis.read(mybytearray, 0, mybytearray.length);
-                        os = clientSocket.getOutputStream();
-                        System.out.println("Sending " + FILE_TO_RECEIVED + "(" + mybytearray.length + " bytes)");
-                        os.write(mybytearray, 0, mybytearray.length);
-                        os.flush();
-                        System.out.println("Done.");
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        }
 
         public void run() {
             String messageFromClient;
@@ -259,6 +234,7 @@ public class Broker {
                     //Images
 
                     acceptImage();
+
                     //broadcastImage();
 
                     // Messages

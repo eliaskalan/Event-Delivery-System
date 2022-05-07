@@ -44,6 +44,7 @@ public class Consumer{
         new Thread(new Runnable() {
             @Override
             public void run() {
+                if (socket.isConnected()) {
 
                     int bytesRead;
                     int current = 0;
@@ -51,51 +52,52 @@ public class Consumer{
                     BufferedOutputStream bos = null;
                     System.out.println("Connecting...");
                     // receive file
-                    byte [] mybytearray  = new byte [FILE_SIZE];
-                InputStream is = null;
-                try {
-                    is = socket.getInputStream();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    fos = new FileOutputStream(FILE_TO_RECEIVED);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                }
-                bos = new BufferedOutputStream(fos);
-                try {
-                    bytesRead = is.read(mybytearray,0,mybytearray.length);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                    byte[] mybytearray = new byte[FILE_SIZE];
+                    InputStream is = null;
+                    try {
+                        is = socket.getInputStream();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        fos = new FileOutputStream(FILE_TO_RECEIVED);
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    bos = new BufferedOutputStream(fos);
+                    try {
+                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
 
-                current = bytesRead;
+                    current = bytesRead;
                     do {
                         try {
                             bytesRead =
-                                    is.read(mybytearray, current, (mybytearray.length-current));
+                                    is.read(mybytearray, current, (mybytearray.length - current));
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                        if(bytesRead >= 0) current += bytesRead;
-                    } while(bytesRead > -1);
+                        if (bytesRead >= 0) current += bytesRead;
+                    } while (bytesRead > -1);
 
-                try {
-                    bos.write(mybytearray, 0 , current);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                try {
-                    bos.flush();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                System.out.println(current);
+                    try {
+                        bos.write(mybytearray, 0, current);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    try {
+                        bos.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println(current);
                     System.out.println("File " + FILE_TO_RECEIVED
                             + " downloaded (" + current + " bytes read)");
 
                 }
+            }
 
         }).start();
     }
