@@ -42,18 +42,14 @@ public class Broker {
         bufferedWriter.newLine();
         bufferedWriter.flush();
         this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
-        String topicName = this.bufferedReader.readLine();
-       // System.out.println(topicName);
-        while (topicName != ""){
-            System.out.println(topicName);
+        int topicsNum = Integer.parseInt( this.bufferedReader.readLine());
+        for(int i=0; i < topicsNum; i++){
+            String topicName = this.bufferedReader.readLine();
             topics.add(new Topic(topicName));
-            topicName = this.bufferedReader.readLine();
         }
         for(Topic topic : topics){
             System.out.println(topic.getTopicName());
         }
-//        calculateKeys();
-       topics.add(new Topic("DS"));
     }
 
 
@@ -120,10 +116,11 @@ public class Broker {
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
+                String userId = bufferedReader.readLine();
                 String topicName = bufferedReader.readLine();
-                String id = bufferedReader.readLine();
+                System.out.println(topicName);
                 int topicPosition = getPositionOfTopic(topicName);
-                topics.get(topicPosition).addUser(new ProfileName(clientUsername, id), this);
+                topics.get(topicPosition).addUser(new ProfileName(clientUsername, userId), this);
                 this.bufferedWriter.write( topics.get(topicPosition).getMessagesFromLength());
                 this.bufferedWriter.newLine();
                 this.bufferedWriter.flush();
@@ -236,8 +233,7 @@ public class Broker {
                         fis = new FileInputStream(myFile);
                         bis = new BufferedInputStream(fis);
                         bis.read(mybytearray, 0, mybytearray.length);
-                        os = clientSocket.
-                                getOutputStream();
+                        os = clientSocket.getOutputStream();
                         System.out.println("Sending " + FILE_TO_RECEIVED + "(" + mybytearray.length + " bytes)");
                         os.write(mybytearray, 0, mybytearray.length);
                         os.flush();
@@ -251,6 +247,30 @@ public class Broker {
             }
         }
 
+        public  int returnTopicFromUserId(String id){
+            int i = 0;
+            for(Topic topic : topics){
+                for(UserTopic user : topic.getUsers()){
+                    if(user.getUserId().equals(id)){
+                        System.out.println("id" + id);
+                        return i;
+                    }
+                }
+                i++;
+            }
+            System.out.println("We don't find user with userId " + id);
+            return 0;
+        }
+
+        public String returnNameFromTopicAndUserId(Topic topic, String id){
+            for(UserTopic user: topic.getUsers()){
+                if(user.getUserId().equals(id)){
+                    return user.getUserName();
+                }
+            }
+            System.out.println("We don't find name " + id);
+            return "";
+        }
         public void run() {
             String messageFromClient;
             while (clientSocket.isConnected()) {
@@ -265,8 +285,8 @@ public class Broker {
                     System.out.println("Server log: " + messageFromClient);
 
                     String[] arrOfStr = messageFromClient.split(": ");
-                    String userid = topics.get(0).getUserIDbyName(arrOfStr[0]);
-                    topics.get(0).addMessage(arrOfStr[1], userid, arrOfStr[0]);
+                    String userid = arrOfStr[0];
+                    topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
                     readyForPull();
 
                 } catch (IOException e) {

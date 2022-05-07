@@ -1,5 +1,7 @@
 package model;
 
+import utils.Config;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -14,8 +16,7 @@ public class ProfileName {
         this.profileName = profileName;
         this.userVideoFilesMap = null;
         this.subscribedConversations = null;
-        this.userId = Integer.toString(usersNum);
-        usersNum++;
+        this.userId = profileName + Config.generateRandomPassword(100);
     }
     public ProfileName(String profileName, String userId) {
         this.profileName = profileName;

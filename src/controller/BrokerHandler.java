@@ -28,14 +28,15 @@ public class BrokerHandler implements Runnable{
     public void sendTopics(ArrayList<TopicZookeeper> topics) throws IOException {
         this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
         System.out.println(topics.size());
+        this.bufferedWriter.write(Integer.toString(topics.size()));
+        this.bufferedWriter.newLine();
+        this.bufferedWriter.flush();
         for(TopicZookeeper topic: topics){
             this.bufferedWriter.write(topic.getTopicName());
             this.bufferedWriter.newLine();
             this.bufferedWriter.flush();
         }
-        this.bufferedWriter.write("");
-        this.bufferedWriter.newLine();
-        this.bufferedWriter.flush();
+
     }
 
 

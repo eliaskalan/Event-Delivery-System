@@ -19,8 +19,8 @@ public class ZookeeperClientHandler {
         user.clientHandler.bufferedWriter.write(infoTable.printTopics());
         this.bufferedWriter.newLine();
         this.bufferedWriter.flush();
-        String[] idInputs = bufferedReader.readLine().split(": ");
-        int id = Integer.parseInt(idInputs[1]);
+        String idInputs = bufferedReader.readLine();
+        int id = Integer.parseInt(idInputs);
         user.clientHandler.bufferedWriter.write(infoTable.getTopicNameFromId(id));
         this.bufferedWriter.newLine();
         this.bufferedWriter.flush();

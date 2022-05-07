@@ -51,7 +51,7 @@ public class Publisher{
                     Scanner scanner = new Scanner(System.in);
                     while (socket.isConnected()) {
                         String messageToSend = scanner.nextLine();
-                        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
+                        bufferedWriter.write(this.profileName.getUserId() + ": " + messageToSend);
                         bufferedWriter.newLine();
                         bufferedWriter.flush();
                     }
@@ -62,7 +62,7 @@ public class Publisher{
     }
 
     public void sendOneTimeMessage(String messageToSend) throws IOException {
-        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
+        bufferedWriter.write(messageToSend);
         bufferedWriter.newLine();
         bufferedWriter.flush();
     }
