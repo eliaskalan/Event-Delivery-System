@@ -21,11 +21,11 @@ public class Zookeeper {
 
             System.out.println("Zookeeper start");
             while (true){
-                if(infoTable.numOfBrokers() < 3){
+                if(infoTable.numOfBrokers() < Config.NUMBER_OF_BROKERS){
                     Socket connection = zookeeperServerSocket.accept();
                     BrokerHandler brokerThread = new BrokerHandler(connection, infoTable);
                     new Thread(brokerThread).start();
-                    if(infoTable.numOfBrokers() == 3){
+                    if(infoTable.numOfBrokers() == Config.NUMBER_OF_BROKERS){
                         infoTable.addTopics(Config.TOPIC_1);
                         infoTable.addTopics(Config.TOPIC_2);
                         infoTable.addTopics(Config.TOPIC_3);

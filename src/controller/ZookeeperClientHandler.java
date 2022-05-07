@@ -19,7 +19,17 @@ public class ZookeeperClientHandler {
         user.clientHandler.bufferedWriter.write(infoTable.printTopics());
         this.bufferedWriter.newLine();
         this.bufferedWriter.flush();
-        String[] id = bufferedReader.readLine().split(": ");
-        System.out.println(id[1]);
+        String[] idInputs = bufferedReader.readLine().split(": ");
+        int id = Integer.parseInt(idInputs[1]);
+        Address address = infoTable.getTopicBroker(id);
+        if(address != null){
+            user.clientHandler.bufferedWriter.write(address.getIp());
+            this.bufferedWriter.newLine();
+            this.bufferedWriter.flush();
+            user.clientHandler.bufferedWriter.write(Integer.toString(address.getPort()));
+            this.bufferedWriter.newLine();
+            this.bufferedWriter.flush();
+        }
+
     }
 }

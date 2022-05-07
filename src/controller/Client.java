@@ -3,7 +3,9 @@ package controller;
 import model.ProfileName;
 import utils.Config;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -28,7 +30,7 @@ public class Client {
     }
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Scanner scanner = new Scanner(System.in);
         System.out.println("What is your name?");
         String username = scanner.nextLine();
@@ -43,12 +45,20 @@ public class Client {
 
         System.out.println("Welcome " + username);
         System.out.println("Select the topic you want");
-        client.consumer.listenForMessageOneTime();
-        System.out.println("Select an id");
+        client.consumer.printListenForMessageOneTime();
         String id = scanner.nextLine();
         System.out.println(id);
         client.publisher.sendOneTimeMessage(id);
+        String ip = client.consumer.listenForMessageOneTime();
+        String port = client.consumer.listenForMessageOneTime();
+
         System.out.println("Complete set up");
+        System.out.println(ip);
+        System.out.println(port);
+        client.socket.close();
+        client  = new Client(new Address(ip, Integer.parseInt(port)), username);
+        System.out.println(client.publisher);
+        System.out.println("Connect to new broker");
         client.consumer.listenForMessage();
         client.publisher.sendMessage();
 

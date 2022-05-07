@@ -27,11 +27,19 @@ public class Broker {
     public ServerSocket socket;
     private Socket zookeeperSocket;
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
-
+    private BufferedWriter bufferedWriter;
     Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
         zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
+        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(zookeeperSocket.getOutputStream()));
+        bufferedWriter.write(this.ip);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+        System.out.println(this.port);
+        bufferedWriter.write(this.port);
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
 //        calculateKeys();
        topics.add(new Topic("DS"));
     }

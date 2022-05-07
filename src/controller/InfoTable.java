@@ -97,8 +97,25 @@ public class InfoTable {
         String message = "Topics:";
         for(TopicZookeeper topic : this.availableTopics){
             i++;
-            message = message + " \n " + i + ": " + topic.getTopicName();
+            message = message + " ~ " + i + ": " + topic.getTopicName();
         }
         return message;
+    }
+
+
+    public ArrayList<TopicZookeeper> getTopicsFromBroker(BrokerInZookeeper broker){
+        return brokersConnectionWithTopics.get(broker);
+    }
+    public Address getTopicBroker(int id){
+        TopicZookeeper topic = this.availableTopics.get(id-1);
+
+      for(BrokerInZookeeper brokerInZookeeper: availableBrokers){
+            for(TopicZookeeper t : getTopicsFromBroker(brokerInZookeeper)){
+                if(t.getTopicName().equals(topic.getTopicName())){
+                    return brokerInZookeeper.getAddress();
+                }
+            }
+      }
+      return null;
     }
 }

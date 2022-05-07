@@ -3,10 +3,9 @@ package controller;
 import model.ProfileName;
 import utils.Config;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -15,9 +14,15 @@ import java.util.HashMap;
 public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
-    public BrokerHandler(Socket connection, InfoTable infoTable){
+    private BufferedReader bufferedReader;
+    public BrokerHandler(Socket connection, InfoTable infoTable) throws IOException {
         this.connection = connection;
-        BrokerInZookeeper bz = new BrokerInZookeeper(this.connection.getInetAddress(), this.connection.getPort());
+        this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String ip = bufferedReader.readLine();
+        int port = bufferedReader.read();
+        System.out.println(ip);
+        System.out.println(port);
+        BrokerInZookeeper bz = new BrokerInZookeeper(ip, port);
         infoTable.addBroker(bz);
     }
 

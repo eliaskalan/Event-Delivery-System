@@ -22,7 +22,7 @@ public class Config {
     public static TopicZookeeper TOPIC_4 = new TopicZookeeper("Sports");
     public static TopicZookeeper TOPIC_5 = new TopicZookeeper("Music");
     public static TopicZookeeper TOPIC_6 = new TopicZookeeper("Exams");
-
+    public static final int NUMBER_OF_BROKERS = 1;
     public static String calculateKeys(Address address) {
         try {
             String hashtext;
