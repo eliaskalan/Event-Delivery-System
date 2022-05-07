@@ -29,7 +29,7 @@ public class Broker {
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
     private BufferedWriter bufferedWriter;
     private BufferedReader bufferedReader;
-    Broker(Address address) throws IOException {
+    public Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
         zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
