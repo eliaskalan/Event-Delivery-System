@@ -42,9 +42,6 @@ public class Broker {
             String topicName = this.bufferedReader.readLine();
             topics.add(new Topic(topicName));
         }
-        for(Topic topic : topics){
-            System.out.println(topic.getTopicName());
-        }
     }
 
 
