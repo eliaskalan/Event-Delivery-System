@@ -128,7 +128,7 @@ public class Broker {
                 this.bufferedWriter.newLine();
                 this.bufferedWriter.flush();
                 for(UserTopic user: topics.get(topicPosition).getUsers()){
-                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
+                    user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
                     user.clientHandler.bufferedWriter.newLine();
                     user.clientHandler.bufferedWriter.flush();
                 }

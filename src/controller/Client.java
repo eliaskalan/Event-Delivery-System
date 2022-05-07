@@ -57,11 +57,11 @@ public class Client {
         System.out.println("Complete set up");
         System.out.println(ip);
         System.out.println(port);
-        client.socket.close();
-        client  = new Client(new Address(ip, Integer.parseInt(port)), username);
-        System.out.println(client.publisher);
-        System.out.println("Connect to new broker");
+        int portInt = Integer.parseInt(port);
+        System.out.println(portInt);
+        client  = new Client(new Address(ip, portInt), username);
 
+        System.out.println("Connect to new broker");
         client.publisher.sendOneTimeMessage(username);
         client.publisher.sendOneTimeMessage(client.profileName.getUserId());
         client.publisher.sendOneTimeMessage(topicName);
