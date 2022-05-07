@@ -41,7 +41,7 @@ public class Zookeeper {
                 }else{
                     Socket connection = zookeeperClients.accept();
                     ZookeeperClientHandler zookeeperClientHandler = new ZookeeperClientHandler(connection, infoTable);
-                   // new Thread(zookeeperClientHandler).start();
+                    new Thread(zookeeperClientHandler).start();
                    // infoTable.printInfo();
                 }
             }
