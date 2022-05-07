@@ -9,9 +9,11 @@ import java.net.InetAddress;
 public class BrokerInZookeeper {
     Address address;
     String id;
-    public BrokerInZookeeper(String ip, int port){
+    public BrokerHandler brokerHandlers;
+    public BrokerInZookeeper(String ip, int port, BrokerHandler brokerHandler){
         this.address = new Address(ip, port);
         this.id = Config.calculateKeys(address);
+        this.brokerHandlers = brokerHandler;
     }
 
     public Address getAddress(){

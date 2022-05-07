@@ -49,6 +49,8 @@ public class Client {
         String id = scanner.nextLine();
         System.out.println(id);
         client.publisher.sendOneTimeMessage(id);
+        String topicName = client.consumer.listenForMessageOneTime();
+        System.out.println("You select " + topicName);
         String ip = client.consumer.listenForMessageOneTime();
         String port = client.consumer.listenForMessageOneTime();
 
@@ -59,6 +61,11 @@ public class Client {
         client  = new Client(new Address(ip, Integer.parseInt(port)), username);
         System.out.println(client.publisher);
         System.out.println("Connect to new broker");
+
+        client.publisher.sendOneTimeMessage(username);
+        client.publisher.sendOneTimeMessage(client.profileName.getUserId());
+        client.publisher.sendOneTimeMessage(topicName);
+
         client.consumer.listenForMessage();
         client.publisher.sendMessage();
 

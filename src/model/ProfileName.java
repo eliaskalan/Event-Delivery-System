@@ -17,6 +17,12 @@ public class ProfileName {
         this.userId = Integer.toString(usersNum);
         usersNum++;
     }
+    public ProfileName(String profileName, String userId) {
+        this.profileName = profileName;
+        this.userVideoFilesMap = null;
+        this.subscribedConversations = null;
+        this.userId = userId;
+    }
 
     public String getUserId(){
         return userId;

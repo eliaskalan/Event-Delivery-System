@@ -48,11 +48,6 @@ public class Publisher{
 
     public void sendMessage(){
                 try {
-                    bufferedWriter.write(this.profileName.getProfileName());
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-
-
                     Scanner scanner = new Scanner(System.in);
                     while (socket.isConnected()) {
                         String messageToSend = scanner.nextLine();

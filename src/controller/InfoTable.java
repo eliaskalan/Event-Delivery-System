@@ -118,4 +118,8 @@ public class InfoTable {
       }
       return null;
     }
+
+    public String getTopicNameFromId(int id){
+        return this.availableTopics.get(id-1).getTopicName();
+    }
 }

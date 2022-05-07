@@ -21,6 +21,9 @@ public class ZookeeperClientHandler {
         this.bufferedWriter.flush();
         String[] idInputs = bufferedReader.readLine().split(": ");
         int id = Integer.parseInt(idInputs[1]);
+        user.clientHandler.bufferedWriter.write(infoTable.getTopicNameFromId(id));
+        this.bufferedWriter.newLine();
+        this.bufferedWriter.flush();
         Address address = infoTable.getTopicBroker(id);
         if(address != null){
             user.clientHandler.bufferedWriter.write(address.getIp());

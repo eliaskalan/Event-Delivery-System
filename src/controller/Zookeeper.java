@@ -32,12 +32,16 @@ public class Zookeeper {
                         infoTable.addTopics(Config.TOPIC_4);
                         infoTable.addTopics(Config.TOPIC_5);
                         infoTable.addTopics(Config.TOPIC_6);
+                        System.out.println("start send");
+                        for(BrokerInZookeeper broker: infoTable.getAvailableBrokers()){
+                            broker.brokerHandlers.sendTopics(infoTable.getTopicsFromBroker(broker));
+                        }
                        // infoTable.printInfo();
                     }
                 }else{
                     Socket connection = zookeeperClients.accept();
                     ZookeeperClientHandler zookeeperClientHandler = new ZookeeperClientHandler(connection, infoTable);
-
+                   // new Thread(zookeeperClientHandler).start();
                    // infoTable.printInfo();
                 }
             }

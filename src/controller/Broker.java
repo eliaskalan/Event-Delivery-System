@@ -28,6 +28,7 @@ public class Broker {
     private Socket zookeeperSocket;
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
     private BufferedWriter bufferedWriter;
+    private BufferedReader bufferedReader;
     Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
@@ -40,6 +41,17 @@ public class Broker {
         bufferedWriter.write(this.port);
         bufferedWriter.newLine();
         bufferedWriter.flush();
+        this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
+        String topicName = this.bufferedReader.readLine();
+       // System.out.println(topicName);
+        while (topicName != ""){
+            System.out.println(topicName);
+            topics.add(new Topic(topicName));
+            topicName = this.bufferedReader.readLine();
+        }
+        for(Topic topic : topics){
+            System.out.println(topic.getTopicName());
+        }
 //        calculateKeys();
        topics.add(new Topic("DS"));
     }
@@ -56,7 +68,7 @@ public class Broker {
         }
     }
 
-    public void  addTopic(Topic topic){
+    public void addTopic(Topic topic){
         topics.add(topic);
     }
     public void connect() {
@@ -108,11 +120,14 @@ public class Broker {
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
-                topics.get(0).addUser(new ProfileName(clientUsername), this);
-                this.bufferedWriter.write( topics.get(0).getMessagesFromLength());
+                String topicName = bufferedReader.readLine();
+                String id = bufferedReader.readLine();
+                int topicPosition = getPositionOfTopic(topicName);
+                topics.get(topicPosition).addUser(new ProfileName(clientUsername, id), this);
+                this.bufferedWriter.write( topics.get(topicPosition).getMessagesFromLength());
                 this.bufferedWriter.newLine();
                 this.bufferedWriter.flush();
-                for(UserTopic user: topics.get(0).getUsers()){
+                for(UserTopic user: topics.get(topicPosition).getUsers()){
                     user.clientHandler.bufferedWriter.write( "SERVER: " + clientUsername + " has entered the chat!");
                     user.clientHandler.bufferedWriter.newLine();
                     user.clientHandler.bufferedWriter.flush();
@@ -125,6 +140,15 @@ public class Broker {
 
         }
 
+        public int getPositionOfTopic(String topic){
+            for(int i=0; i < topics.size(); i++){
+                if(topics.get(i).getTopicName().equals(topic)){
+                    return i;
+                }
+            }
+            System.out.println("We don't find topic");
+            return 0;
+        }
 
         public void readyForPull() throws IOException {
             for (Topic topic : topics) {

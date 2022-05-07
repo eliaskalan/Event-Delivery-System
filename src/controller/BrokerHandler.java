@@ -15,48 +15,31 @@ public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
     private BufferedReader bufferedReader;
+    private BufferedWriter bufferedWriter;
     public BrokerHandler(Socket connection, InfoTable infoTable) throws IOException {
         this.connection = connection;
         this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String ip = bufferedReader.readLine();
         int port = bufferedReader.read();
-        System.out.println(ip);
-        System.out.println(port);
-        BrokerInZookeeper bz = new BrokerInZookeeper(ip, port);
+        BrokerInZookeeper bz = new BrokerInZookeeper(ip, port, this);
         infoTable.addBroker(bz);
     }
 
-    public boolean checkClientExist(ProfileName client){
-        for (ProfileName clientFromArray : zookeeper.getInfoTable().getAvailableClients().keySet()){
-            if(clientFromArray.getUserId().equals(client.getUserId())){
-                return true;
-            }
+    public void sendTopics(ArrayList<TopicZookeeper> topics) throws IOException {
+        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+        System.out.println(topics.size());
+        for(TopicZookeeper topic: topics){
+            this.bufferedWriter.write(topic.getTopicName());
+            this.bufferedWriter.newLine();
+            this.bufferedWriter.flush();
         }
-        return false;
+        this.bufferedWriter.write("");
+        this.bufferedWriter.newLine();
+        this.bufferedWriter.flush();
     }
-
-    public boolean checkBrokerExist(Address brokerAddress, HashMap<Address, ArrayList<String>> topicsAssociatedWithBrokers, HashMap<Address, BigInteger> hashingIDAssociatedWithBrokers){
-        if(topicsAssociatedWithBrokers != null){
-            for (Address address : topicsAssociatedWithBrokers.keySet()){
-                if (brokerAddress.equals(address)){
-                    return true;
-                }
-            }
-        }
-
-        if(hashingIDAssociatedWithBrokers != null){
-            for (Address address : hashingIDAssociatedWithBrokers.keySet()){
-                if (brokerAddress.equals(address)){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
 
 
     public void run(){
-        System.out.println("Server: Zookeeper connect with broker in port: " + connection.getPort());
+        System.out.println("Server: Zookeeper connect with broker");
     }
 }
