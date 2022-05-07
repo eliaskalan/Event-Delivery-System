@@ -1,6 +1,7 @@
 package controller;
 
 import model.ProfileName;
+import utils.Config;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,12 +19,7 @@ public class ZookeeperClientHandler implements Runnable{
     }
 
     public void run(){
-        String clientUsername = null;
-        try {
-            clientUsername = bufferedReader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String clientUsername = Config.readAMessage(bufferedReader);
         UserZookeeper user = new UserZookeeper(new ProfileName(clientUsername), this);
         infoTable.addClients(user);
         try {
@@ -31,75 +27,14 @@ public class ZookeeperClientHandler implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try {
-            user.clientHandler.bufferedWriter.write(infoTable.printTopics());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.bufferedWriter.newLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.bufferedWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        String idInputs = null;
-        try {
-            idInputs = bufferedReader.readLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Config.sendAMessage(user.clientHandler.bufferedWriter, infoTable.printTopics());
+        String idInputs = Config.readAMessage(bufferedReader);
         int id = Integer.parseInt(idInputs);
-        try {
-            user.clientHandler.bufferedWriter.write(infoTable.getTopicNameFromId(id));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.bufferedWriter.newLine();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            this.bufferedWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Config.sendAMessage(user.clientHandler.bufferedWriter, infoTable.getTopicNameFromId(id));
         Address address = infoTable.getTopicBroker(id);
         if(address != null){
-            try {
-                user.clientHandler.bufferedWriter.write(address.getIp());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                this.bufferedWriter.newLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                this.bufferedWriter.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                user.clientHandler.bufferedWriter.write(Integer.toString(address.getPort()));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                this.bufferedWriter.newLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                this.bufferedWriter.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Config.sendAMessage(user.clientHandler.bufferedWriter, address.getIp());
+            Config.sendAMessage(user.clientHandler.bufferedWriter,Integer.toString(address.getPort()));
         }
     }
 }

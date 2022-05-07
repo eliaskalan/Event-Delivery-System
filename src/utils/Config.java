@@ -4,6 +4,9 @@ import controller.Address;
 import controller.Topic;
 import controller.TopicZookeeper;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -54,5 +57,26 @@ public class Config {
         for (int i = 0; i < len; i++)
             sb.append(chars.charAt(rnd.nextInt(chars.length())));
         return sb.toString();
+    }
+
+    public static void sendAMessage(BufferedWriter bufferedWriter, String message){
+        try {
+            bufferedWriter.write(message);
+            bufferedWriter.newLine();
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            System.out.println("Problem to send message");
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static String readAMessage(BufferedReader bufferedReader){
+        try {
+           return bufferedReader.readLine();
+        } catch (IOException e) {
+            System.out.println("Problem to read message");
+            throw new RuntimeException(e);
+        }
     }
 }
