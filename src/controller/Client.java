@@ -55,13 +55,9 @@ public class Client {
         String port = client.consumer.listenForMessageOneTime();
 
         System.out.println("Complete set up");
-        System.out.println(ip);
-        System.out.println(port);
         int portInt = Integer.parseInt(port);
-        System.out.println(portInt);
         client  = new Client(new Address(ip, portInt), username);
-
-        System.out.println("Connect to new broker");
+        
         client.publisher.sendOneTimeMessage(username);
         client.publisher.sendOneTimeMessage(client.profileName.getUserId());
         client.publisher.sendOneTimeMessage(topicName);

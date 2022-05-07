@@ -4,6 +4,7 @@ package controller;
 import model.MultimediaFile;
 import model.ProfileName;
 import model.Value;
+import utils.Config;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -62,9 +63,7 @@ public class Publisher{
     }
 
     public void sendOneTimeMessage(String messageToSend) throws IOException {
-        bufferedWriter.write(messageToSend);
-        bufferedWriter.newLine();
-        bufferedWriter.flush();
+        Config.sendAMessage(bufferedWriter, messageToSend);
     }
 
 
