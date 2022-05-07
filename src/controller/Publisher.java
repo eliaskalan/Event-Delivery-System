@@ -47,14 +47,13 @@ public class Publisher {
 //
 //        }
 //    }
-
+    public void setProfileName() throws IOException {
+        bufferedWriter.write(this.profileName.getProfileName());
+        bufferedWriter.newLine();
+        bufferedWriter.flush();
+    }
     public void sendMessage(){
                 try {
-                    bufferedWriter.write(this.profileName.getProfileName());
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
-
-
                     Scanner scanner = new Scanner(System.in);
                     while (socket.isConnected()) {
                         String messageToSend = scanner.nextLine();
@@ -71,6 +70,8 @@ public class Publisher {
 
 
     public void sendImage() throws IOException {
+        DataInputStream dataInputStream=null;
+
 
         FileInputStream fis = null;
         BufferedInputStream bis = null;
@@ -82,6 +83,7 @@ public class Publisher {
             File myFile = new File(FILE_TO_SEND);
             byte[] mybytearray = new byte[(int) myFile.length()];
             fis = new FileInputStream(myFile);
+
             bis = new BufferedInputStream(fis);
             bis.read(mybytearray, 0, mybytearray.length);
             os = socket.getOutputStream();

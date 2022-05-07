@@ -29,6 +29,7 @@ public class Client {
         System.out.println("What is your name?");
         String username = scanner.nextLine();
         Client client = new Client("localhost", 12345, username);
+        client.publisher.setProfileName();
 
         //Images
         //client.consumer.listenForImages();
