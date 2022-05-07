@@ -17,7 +17,7 @@ public class InfoTable {
     private HashMap<BrokerInZookeeper, ArrayList<TopicZookeeper>> brokersConnectionWithTopics = new HashMap<>();
     private HashMap<ProfileName, ArrayList<TopicZookeeper>> availableClients = new HashMap<>();
 
-    private ArrayList<ProfileName> clients = new ArrayList<>();
+    private ArrayList<UserZookeeper> clients = new ArrayList<>();
     private ArrayList<TopicZookeeper> availableTopics = new ArrayList<>();
 
 
@@ -47,7 +47,7 @@ public class InfoTable {
         this.availableTopics.add(topic);
     }
 
-    public void addClients(ProfileName user){
+    public void addClients(UserZookeeper user){
         this.clients.add(user);
     }
 
@@ -86,9 +86,19 @@ public class InfoTable {
             }
             System.out.println("-----------------");
 
-            for(ProfileName user :this.clients){
-                System.out.println(user.getProfileName());
+            for(UserZookeeper user :this.clients){
+                System.out.println(user.getUserName());
             }
         }
+    }
+
+    public String printTopics(){
+        int i = 0;
+        String message = "Topics:";
+        for(TopicZookeeper topic : this.availableTopics){
+            i++;
+            message = message + " \n " + i + ": " + topic.getTopicName();
+        }
+        return message;
     }
 }
