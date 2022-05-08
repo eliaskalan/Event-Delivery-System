@@ -3,6 +3,7 @@ public class Message {
     private String context;
     private String userId;
     private String userName;
+    private String type;
     Message(String context, String user, String userName){
         this.context = context;
         this.userId = user;
@@ -18,5 +19,9 @@ public class Message {
 
     public String getUserName(){
         return this.userName;
+    }
+
+    public String getType(){
+        return  this.type;
     }
 }

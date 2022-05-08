@@ -20,7 +20,8 @@ import java.util.Scanner;
 
 public class Config {
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
-
+    public static final String IMAGE_TYPE="image";
+    public static final String MESSAGE_TYPE="message";
     public static String ZOOKEEPER_IP = "localhost";
     public static Address ZOOKEEPER_BROKERS = new Address(ZOOKEEPER_IP, 22345);
     public static Address ZOOKEEPER_CLIENTS = new Address(ZOOKEEPER_IP, 22346);

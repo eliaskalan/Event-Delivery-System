@@ -172,6 +172,31 @@ public class Broker {
             }
         }
 
+        public void broadcastImage(String IMAGE_PATH) throws IOException {
+            DataInputStream dataInputStream=null;
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            OutputStream os = null;
+
+            if(clientSocket.isConnected()) {
+                //Config.sendAMessage(bufferedWriter,Config.IMAGE_TYPE);
+
+                File myFile = new File(IMAGE_PATH);
+                byte[] mybytearray = new byte[(int) myFile.length()];
+                fis = new FileInputStream(myFile);
+
+                bis = new BufferedInputStream(fis);
+                bis.read(mybytearray, 0, mybytearray.length);
+                os = clientSocket.getOutputStream();
+
+                System.out.println("Sending " + IMAGE_PATH + "(" + mybytearray.length + " bytes)");
+                os.write(mybytearray, 0, mybytearray.length);
+                os.flush();
+                System.out.println("Done.");
+            }
+        }
+
+
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
             for(Topic topic: topics){
@@ -186,25 +211,34 @@ public class Broker {
         public final static String
                 FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "BrokersFile\\" + "new_download.jpeg";
         public final static int FILE_SIZE = 6022386;
-
         public void acceptImage() throws IOException {
+            InputStream inputStream = clientSocket.getInputStream();
             int bytesRead;
             int current = 0;
             FileOutputStream fos = null;
             BufferedOutputStream bos = null;
             System.out.println("Connecting...");
             // receive file
+
             byte [] mybytearray  = new byte [FILE_SIZE];
-            InputStream is = clientSocket.getInputStream();
+
             fos = new FileOutputStream(FILE_TO_RECEIVED);
             bos = new BufferedOutputStream(fos);
-            bytesRead = is.read(mybytearray,0,mybytearray.length);
+            bytesRead = inputStream.read(mybytearray,0,mybytearray.length);
 
             current = bytesRead;
+
             do {
-                bytesRead =
-                        is.read(mybytearray, current, (mybytearray.length-current));
-                if(bytesRead >= 0) current += bytesRead;
+                try{
+                    bytesRead =inputStream.read(mybytearray, current, (mybytearray.length-current));
+
+                    if(bytesRead >= 0) {
+                        current += bytesRead;
+                    }
+                }catch (IOException e)
+                {
+                    bytesRead=-1;
+                }
             } while(bytesRead > -1);
 
             bos.write(mybytearray, 0 , current);
@@ -212,7 +246,12 @@ public class Broker {
             System.out.println(current);
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
+            String userid = topics.get(0).getUserIDbyName(clientUsername);
+            //If image send works we will add this
+            //topics.get(0).addMessage(FILE_TO_RECEIVED,userid,clientUsername,Config.IMAGE_TYPE);
+            readyForPull();
         }
+
         public void broadcastImage() {
             for (ClientHandler client : registerClient) {
                 if (!client.clientUsername.equals(clientUsername)) {
@@ -243,6 +282,98 @@ public class Broker {
             }
         }
 
+        public void readyForPullWorksWithImage() throws IOException {
+            for (Topic topic : topics) {
+                for (UserTopic user : topic.getUsers()) {
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        while(index < topic.messageLength()) {
+                            if (topic.getType(index).equals(Config.MESSAGE_TYPE)) {
+                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                index++;
+                                user.setLastMessageHasUserRead(index);
+                            }
+                           else if(topic.getType(index).equals(Config.IMAGE_TYPE)) {
+                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                //Will work with the images
+                                //broadcastImage(topic.getContext(index));
+                                index++;
+                                user.setLastMessageHasUserRead(index);
+                            }
+                        }
+
+
+                    } catch (NullPointerException e) {
+                        removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
+        }
+
+
+        public void acceptVideo(String [] files) throws Exception{
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
+            int numOfFiles = dataInputStream.read();
+            System.out.println("numOfFiles: " + numOfFiles);
+
+            for (String file : files) {
+                receiveChunk(file);
+            }
+
+            /*String path_of_transferred_chunks = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
+            String path_of_joined_file = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
+            MultimediaFile mf = new MultimediaFile();
+            mf.JoinVideo("myVid.mkv", path_of_transferred_chunks, path_of_joined_file);*/
+        }
+
+        private void receiveChunk(String fileName) throws Exception{
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
+            int bytes = 0;
+            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+            long size = dataInputStream.readLong();     // read file size
+            System.out.println("size: " + size);
+            byte[] buffer = new byte[(int)size];
+            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+                fileOutputStream.write(buffer,0,bytes);
+                size -= bytes;      // read upto file size
+            }
+            //            fileOutputStream.close();
+        }
+
+        public void broadcastVideo(String video_name, String folder_for_chunks) throws Exception {
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());;
+            System.out.println(clientSocket.isConnected());
+
+            for (ClientHandler client : registerClient) {
+
+                // if (!client.clientUsername.equals(clientUsername)) {
+                File splitFiles = new File(folder_for_chunks);
+                File[] files = splitFiles.getAbsoluteFile().listFiles();
+                dataOutputStream.write(files.length);
+                for (File file : files) {
+                    System.out.println(file.getAbsolutePath());
+                    broadcastChunk(file.getAbsolutePath());
+                }
+                // }
+            }
+        }
+        private void broadcastChunk(String path) throws Exception{
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            int bytes = 0;
+            File file = new File(path);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // send file size
+            dataOutputStream.writeLong(file.length());
+            System.out.println("file.length(): " + file.length());
+            // break file into chunks
+            byte[] buffer = new byte[(int)file.length()];
+            while ((bytes=fileInputStream.read(buffer))!=-1){
+                dataOutputStream.write(buffer,0,bytes);
+                dataOutputStream.flush();
+            }
+            //fileInputStream.close();
+        }
         public  int returnTopicFromUserId(String id){
             int i = 0;
             for(Topic topic : topics){
