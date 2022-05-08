@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Config {
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
@@ -34,6 +35,8 @@ public class Config {
     public static TopicZookeeper TOPIC_5 = new TopicZookeeper("Music");
     public static TopicZookeeper TOPIC_6 = new TopicZookeeper("Exams");
     public static final int NUMBER_OF_BROKERS = 3;
+
+    public static final String EXIT_FROM_TOPIC = "EXIT";
     public static String calculateKeys(Address address) {
         try {
             String hashtext;
@@ -98,6 +101,11 @@ public class Config {
         }
     }
 
+    public static String readFromUser(String message){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(message);
+        return scanner.nextLine();
+    }
     public static String getPublicIp() {
         String ip;
         try {

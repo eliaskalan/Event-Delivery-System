@@ -29,13 +29,33 @@ public class Client {
         }
     }
 
+    public void initialBroker(String topicName) throws IOException {
+        this.publisher.sendOneTimeMessage(this.profileName.getProfileName());
+        this.publisher.sendOneTimeMessage(this.profileName.getUserId());
+        this.publisher.sendOneTimeMessage(topicName);
+    }
 
+    public Address getBrokerAddress() throws IOException {
+        String ip = this.consumer.listenForMessageOneTime();
+        String port = this.consumer.listenForMessageOneTime();
+        return new Address(ip, Integer.parseInt(port));
+    }
+
+    public String initialConnectWithZookeeperAndGetTopic(String username) throws IOException {
+        this.publisher.sendOneTimeMessage(username);
+        System.out.println("Welcome " + username);
+        this.consumer.printListenForMessageOneTime();
+        String id = Config.readFromUser("Select the topic you want");
+        System.out.println(id);
+        this.publisher.sendOneTimeMessage(id);
+        String topicName = this.consumer.listenForMessageOneTime();
+        System.out.println("If you want to exit from topic write " + Config.EXIT_FROM_TOPIC);
+        return topicName;
+    }
     public static void main(String[] args) throws IOException, InterruptedException {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("What is your name?");
-        String username = scanner.nextLine();
+        String username = Config.readFromUser("What is your name?");
         Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
-        client.publisher.sendOneTimeMessage(username);
+        String topicName = client.initialConnectWithZookeeperAndGetTopic(username);
 
         //Images
         //client.consumer.listenForImages();
@@ -43,27 +63,29 @@ public class Client {
 
         //Messages
 
-        System.out.println("Welcome " + username);
-        System.out.println("Select the topic you want");
-        client.consumer.printListenForMessageOneTime();
-        String id = scanner.nextLine();
-        System.out.println(id);
-        client.publisher.sendOneTimeMessage(id);
-        String topicName = client.consumer.listenForMessageOneTime();
+
+
         System.out.println("You select " + topicName);
-        String ip = client.consumer.listenForMessageOneTime();
-        String port = client.consumer.listenForMessageOneTime();
-
         System.out.println("Complete set up");
-        int portInt = Integer.parseInt(port);
-        client  = new Client(new Address(ip, portInt), username);
+        Address address = client.getBrokerAddress();
+        client  = new Client(address, username);
+        client.initialBroker(topicName);
+        while (true){
+            try{
+                client.consumer.listenForMessage();
+                client.publisher.sendMessage();
+            }catch (IOException e){
+                client.socket.close();
+                client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
+                topicName = client.initialConnectWithZookeeperAndGetTopic(username);
+                System.out.println("You select " + topicName);
+                System.out.println("Complete set up");
+                address = client.getBrokerAddress();
+                client  = new Client(address, username);
+                client.initialBroker(topicName);
+            }
+        }
 
-        client.publisher.sendOneTimeMessage(username);
-        client.publisher.sendOneTimeMessage(client.profileName.getUserId());
-        client.publisher.sendOneTimeMessage(topicName);
-
-        client.consumer.listenForMessage();
-        client.publisher.sendMessage();
 
 
 

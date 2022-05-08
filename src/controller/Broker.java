@@ -103,7 +103,7 @@ public class Broker {
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
         private String clientUsername;
-
+        private String clientId;
 
         public static ArrayList<ClientHandler> registerClient = new ArrayList<>();
         public ClientHandler(Socket socket) throws IOException {
@@ -114,6 +114,7 @@ public class Broker {
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
                 String userId = bufferedReader.readLine();
+                this.clientId = userId;
                 String topicName = bufferedReader.readLine();
                 System.out.println(topicName);
                 int topicPosition = getPositionOfTopic(topicName);
@@ -124,7 +125,8 @@ public class Broker {
                 }
 
             }catch (IOException e){
-                removeClient();
+                System.out.println("Remove");
+                this.removeClient();
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
 
@@ -150,7 +152,7 @@ public class Broker {
                             user.setLastMessageHasUserRead(topic.messageLength());
                         }
                     } catch (NullPointerException e) {
-                        removeClient();
+                        this.removeClient();
                         closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
                 }
@@ -172,7 +174,12 @@ public class Broker {
 
         public void removeClient() {
             System.out.println(this.clientUsername + " has left the server");
-            registerClient.remove(this);
+            for(Topic topic: topics){
+                System.out.println(this.clientId);
+                if(topic.removeUserIfExist(this.clientId)){
+                    break;
+                }
+            }
             broadcastMessage("SERVER:" + this.clientUsername + "has left the chat!");
         }
 
@@ -277,6 +284,11 @@ public class Broker {
                     topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
                     readyForPull();
                 } catch (IOException e) {
+                    removeClient();
+                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    break;
+                } catch (NullPointerException e){
+                    removeClient();
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
                 }

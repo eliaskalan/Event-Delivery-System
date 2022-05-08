@@ -25,6 +25,17 @@ public class Topic {
         return totalMessage;
     }
 
+    public boolean removeUserIfExist(String userId){
+        for(UserTopic user: users){
+            if(user.getUserId().equals(userId)){
+                System.out.println("removed user");
+                users.remove(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addMessage(String context, String userId, String userName){
         messages.add(new Message(context, userId, userName));
         for(UserTopic user : this.users){
