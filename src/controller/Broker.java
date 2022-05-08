@@ -227,7 +227,7 @@ public class Broker {
             System.out.println("File " + FILE_TO_RECEIVED
                     + " downloaded (" + current + " bytes read)");
             String userid = topics.get(0).getUserIDbyName(clientUsername);
-            topics.get(0).addMessage(FILE_TO_RECEIVED,userid,clientUsername,"image");
+            topics.get(0).addMessage(FILE_TO_RECEIVED,userid,clientUsername,Config.IMAGE_TYPE);
             readyForPull();
         }
         public void acceptMessage() throws IOException {
@@ -236,7 +236,9 @@ public class Broker {
 
                 String[] arrOfStr = messageFromClient.split(": ");
                 String userid = arrOfStr[0];
-                topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
+                String context=arrOfStr[1];
+                String username = returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)),userid);
+                topics.get(returnTopicFromUserId(userid)).addMessage(context,userid,username,Config.MESSAGE_TYPE);
                 readyForPull();
 
         }

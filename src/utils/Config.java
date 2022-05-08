@@ -13,6 +13,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 public class Config {
+    public static final String IMAGE_TYPE="image";
+    public static final String MESSAGE_TYPE="message";
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
     public static Address ZOOKEEPER_BROKERS = new Address(22345);
     public static Address ZOOKEEPER_CLIENTS = new Address(22346);
