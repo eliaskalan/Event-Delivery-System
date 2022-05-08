@@ -37,6 +37,18 @@ public class Consumer{
             }
         }).start();
     }
+
+
+    public String listenForMessageOneTime() throws IOException {
+        String msg;
+        msg = bufferedReader.readLine();
+        return msg;
+    }
+
+    public void printListenForMessageOneTime() throws IOException {
+      System.out.println(listenForMessageOneTime());
+    }
+
     public final static String
             FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
     public final static int FILE_SIZE = 6022386;

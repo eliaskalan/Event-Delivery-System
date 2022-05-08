@@ -4,6 +4,7 @@ package controller;
 import model.MultimediaFile;
 import model.ProfileName;
 import model.Value;
+import utils.Config;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -18,18 +19,17 @@ import java.util.Scanner;
 
 import static utils.socketMethods.closeEverything;
 
-public class Publisher {
-    ProfileName profileName;
-    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
+public class Publisher{
+
     private BufferedWriter bufferedWriter;
     private Socket socket;
-
-    Publisher(Socket socket, String profileName) throws IOException {
+    ProfileName profileName;
+    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
+    Publisher(Socket socket, ProfileName profileName) throws IOException {
         this.socket = socket;
-        this.profileName = new ProfileName(profileName);
-
-        try {
-            this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+        this.profileName = profileName;
+        try{
+            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedWriter);
@@ -37,34 +37,16 @@ public class Publisher {
     }
 
 
-//    public void push(String a, Value b) {
-//        //ToDo string a is hash code?
-//        try{
-//            out.writeChars(a);
-//            out.flush();
-//        }catch (IOException ioException){
-//
-//        }
-//    }
-
     public void sendMessage(){
-                try {
-                    bufferedWriter.write(this.profileName.getProfileName());
-                    bufferedWriter.newLine();
-                    bufferedWriter.flush();
+        Scanner scanner = new Scanner(System.in);
+        while (socket.isConnected()) {
+            String messageToSend = scanner.nextLine();
+            Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
+        }
+    }
 
-
-                    Scanner scanner = new Scanner(System.in);
-                    while (socket.isConnected()) {
-                        String messageToSend = scanner.nextLine();
-                        bufferedWriter.write(this.profileName.getProfileName() + ": " + messageToSend);
-                        bufferedWriter.newLine();
-                        bufferedWriter.flush();
-                    }
-                } catch (IOException e) {
-                    closeEverything(socket, bufferedWriter);
-                }
-
+    public void sendOneTimeMessage(String messageToSend) throws IOException {
+        Config.sendAMessage(bufferedWriter, messageToSend);
     }
 
 

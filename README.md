@@ -8,9 +8,19 @@ we will try a **MVC** model
 - **View** (In the future will be an android app)
 - **Utils** (Our custom tools to help us)
 
-## Code Structure from the lab
-![ProjectSkeleton2022](https://user-images.githubusercontent.com/29278831/160910448-4e0fa86c-7d93-40af-86d9-9685345261ab.png)
+## Run Project
+Go to `src` -> `utils` -> `Config`
 
-## Contributors
+Set how many brokers you want to have with variable `NUMBER_OF_BROKERS`.
+Then for how many `NUMBER_OF_BROKERS` create static variables of type `Address`
+
+As in example `public static Address BROKER_1`.
+
+Then create for each broker class where you initialize the brokers as `Broker1`
+and give the constant variables from the previous step.
+
+This example has 6 channels!
+
+## Collaborators
 - [Elias Kalantzis](https://github.com/L0TH)
 - [Konstantinos Katsamis](https://github.com/konstantinosKatsamis)

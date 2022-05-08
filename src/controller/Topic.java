@@ -8,7 +8,7 @@ public class Topic {
     private ArrayList<Message> messages = new ArrayList<Message>();
     private ArrayList<UserTopic> users = new ArrayList<UserTopic>();
 
-    Topic(String topicName){
+    public Topic(String topicName){
         this.topicName = topicName;
     }
 
