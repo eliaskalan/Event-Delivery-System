@@ -1,5 +1,7 @@
 package controller;
 
+import utils.Config;
+
 import java.io.Serializable;
 
 public class Address implements Serializable {
@@ -14,7 +16,7 @@ public class Address implements Serializable {
     }
 
     public Address(int port){
-        this.ip = "localhost";
+        this.ip = Config.getPublicIp();
         this.port = port;
     }
 

@@ -42,6 +42,11 @@ public class Broker {
             String topicName = this.bufferedReader.readLine();
             topics.add(new Topic(topicName));
         }
+        System.out.println("Broker topics: ");
+        for(Topic topic : topics){
+            System.out.println(topic.getTopicName());
+        }
+        System.out.println("---------------");
     }
 
 
@@ -271,7 +276,6 @@ public class Broker {
                     String userid = arrOfStr[0];
                     topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
                     readyForPull();
-
                 } catch (IOException e) {
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
