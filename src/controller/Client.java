@@ -49,6 +49,7 @@ public class Client {
         System.out.println(id);
         this.publisher.sendOneTimeMessage(id);
         String topicName = this.consumer.listenForMessageOneTime();
+        System.out.println("If you want to exit from topic write " + Config.EXIT_FROM_TOPIC);
         return topicName;
     }
     public static void main(String[] args) throws IOException, InterruptedException {
@@ -74,6 +75,7 @@ public class Client {
                 client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){
+                client.socket.close();
                 client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
                 topicName = client.initialConnectWithZookeeperAndGetTopic(username);
                 System.out.println("You select " + topicName);

@@ -28,6 +28,8 @@ public class Config {
     public static TopicZookeeper TOPIC_5 = new TopicZookeeper("Music");
     public static TopicZookeeper TOPIC_6 = new TopicZookeeper("Exams");
     public static final int NUMBER_OF_BROKERS = 3;
+
+    public static final String EXIT_FROM_TOPIC = "EXIT";
     public static String calculateKeys(Address address) {
         try {
             String hashtext;

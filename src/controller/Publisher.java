@@ -41,7 +41,7 @@ public class Publisher{
         Scanner scanner = new Scanner(System.in);
         while (socket.isConnected()) {
             String messageToSend = scanner.nextLine();
-            if(messageToSend.equals("EXIT")){
+            if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
                 throw new IOException("Go to zookeeper");
             }
             Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
