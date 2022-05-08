@@ -19,8 +19,10 @@ import java.util.Random;
 
 public class Config {
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
-    public static Address ZOOKEEPER_BROKERS = new Address(22345);
-    public static Address ZOOKEEPER_CLIENTS = new Address(22346);
+
+    public static String ZOOKEEPER_IP = "localhost";
+    public static Address ZOOKEEPER_BROKERS = new Address(ZOOKEEPER_IP, 22345);
+    public static Address ZOOKEEPER_CLIENTS = new Address(ZOOKEEPER_IP, 22346);
     public static Address BROKER_1 = new Address(22351);
     public static Address BROKER_2 = new Address(22352);
     public static Address BROKER_3 = new Address(22353);
@@ -108,10 +110,11 @@ public class Config {
                 Enumeration<InetAddress> addresses = iface.getInetAddresses();
                 while (addresses.hasMoreElements()) {
                     InetAddress addr = addresses.nextElement();
-                    
+
                     if (addr instanceof Inet6Address) continue;
 
                     ip = addr.getHostAddress();
+                    System.out.println(ip);
                     return ip;
                 }
             }
