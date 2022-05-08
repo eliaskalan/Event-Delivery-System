@@ -20,7 +20,7 @@ Then create for each broker class where you initialize the brokers as `Broker1`
 and give the constant variables from the previous step.
 
 This example has 6 channels!
-
 ## Collaborators
-- [Elias Kalantzis](https://github.com/L0TH)
-- [Konstantinos Katsamis](https://github.com/konstantinosKatsamis)
+- [Ioannis Apostolou - Ιωάννης Αποστόλου - 3190013](https://github.com/giannistolou)
+- [Elias Kalantzis - Ηλίας Καλαντζης - 3190068](https://github.com/L0TH)
+- [Konstantinos Katsamis - Κωνσταντίνος Κατσάμης - 3190237](https://github.com/konstantinosKatsamis)
