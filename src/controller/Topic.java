@@ -39,7 +39,7 @@ public class Topic {
     }
 
     public void addMessage(String context, String userId, String userName){
-       // messages.add(new Message(context, userId, userName));
+       messages.add(new Message(context, userId, userName));
         for(UserTopic user : this.users){
             if(user.getUserId().equals(userId)){
                 user.setLastMessageHasUserRead(user.lastMessageHasUserRead + 1);
