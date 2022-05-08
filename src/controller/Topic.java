@@ -15,7 +15,9 @@ public class Topic {
     public void addUser(ProfileName user, Broker.ClientHandler clientHandler){
         users.add(new UserTopic(user, this.messageLength(), clientHandler));
     }
-
+    public String getContext(int lastMessageHasRead){
+        return messages.get(lastMessageHasRead).getContext();
+    }
 
     public String sendAllMessages(){
         String totalMessage = "";
@@ -48,7 +50,10 @@ public class Topic {
         }
         return "We don't find any new message";
     }
-
+    public String getType(int lastMessageHasRead)
+    {
+        return messages.get(lastMessageHasRead).getType();
+    }
     public String getMessagesFromLength(int lastMessageHasRead){
         String message = "";
         Message messageObject = messages.get(lastMessageHasRead);
@@ -63,7 +68,6 @@ public class Topic {
         }
         return message;
     }
-
 
     public int getUserNumber(){
         return this.users.size();

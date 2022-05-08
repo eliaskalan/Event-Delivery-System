@@ -23,6 +23,8 @@ public class Message {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
+
+    public String getContext() { return this.context;}
 }

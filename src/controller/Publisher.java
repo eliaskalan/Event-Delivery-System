@@ -22,7 +22,7 @@ import static utils.socketMethods.closeEverything;
 public class Publisher {
     ProfileName profileName;
     //TODO static name for the image must change
-    public final static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
+    public  static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE ;
     private BufferedWriter bufferedWriter;
     private Socket socket;
     Publisher(Socket socket, ProfileName profileName) throws IOException {
@@ -38,12 +38,15 @@ public class Publisher {
 
 
     public void sendMessage(){
+
         Scanner scanner = new Scanner(System.in);
-        while (socket.isConnected()) {
+            if (socket.isConnected()) {
+            Config.sendAMessage(bufferedWriter,Config.MESSAGE_TYPE);
             String messageToSend = scanner.nextLine();
             Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
         }
     }
+
 
     public void sendOneTimeMessage(String messageToSend) throws IOException {
         Config.sendAMessage(bufferedWriter, messageToSend);
@@ -52,15 +55,20 @@ public class Publisher {
 
 
     public void sendImage() throws IOException {
+
+
         DataInputStream dataInputStream=null;
-
-
         FileInputStream fis = null;
         BufferedInputStream bis = null;
         OutputStream os = null;
 
-
         if(socket.isConnected()) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("File name");
+            String file_name = scanner.nextLine();
+            FILE_TO_SEND=FILE_TO_SEND+file_name+".jpeg";
+            Config.sendAMessage(bufferedWriter,Config.IMAGE_TYPE);
+
 
             File myFile = new File(FILE_TO_SEND);
             byte[] mybytearray = new byte[(int) myFile.length()];

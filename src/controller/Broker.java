@@ -117,17 +117,16 @@ public class Broker {
                 this.bufferedReader = new BufferedReader(this.inputStreamReader);
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
 
-
                 this.clientUsername = bufferedReader.readLine();
                 String userId = bufferedReader.readLine();
                 String topicName = bufferedReader.readLine();
                 System.out.println(topicName);
                 int topicPosition = getPositionOfTopic(topicName);
                 topics.get(topicPosition).addUser(new ProfileName(clientUsername, userId), this);
-                Config.sendAMessage(bufferedWriter, topics.get(topicPosition).getMessagesFromLength());
-                for(UserTopic user: topics.get(topicPosition).getUsers()){
-                    Config.sendAMessage(user.clientHandler.bufferedWriter, "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
-                }
+//                Config.sendAMessage(bufferedWriter, topics.get(topicPosition).getMessagesFromLength());
+//                for(UserTopic user: topics.get(topicPosition).getUsers()){
+//                    Config.sendAMessage(user.clientHandler.bufferedWriter, "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
+//                }
 
             }catch (IOException e){
                 removeClient();
@@ -152,10 +151,16 @@ public class Broker {
                     try {
                         int index = user.lastMessageHasUserRead;
                         while(index < topic.messageLength()){
-                            Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
-                            index++;
-                            user.setLastMessageHasUserRead(index);
-
+                            if(topic.getType(index).equals(Config.MESSAGE_TYPE)) {
+                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                index++;
+                                user.setLastMessageHasUserRead(index);
+                            }
+                            if(topic.getType(index).equals(Config.IMAGE_TYPE));
+                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                broadcastImage(topic.getContext(index));
+                                index++;
+                                user.setLastMessageHasUserRead(index);
                         }
                         
                     } catch (NullPointerException e) {
@@ -163,6 +168,29 @@ public class Broker {
                         closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
                 }
+            }
+        }
+        public void broadcastImage(String IMAGE_PATH) throws IOException {
+            DataInputStream dataInputStream=null;
+            FileInputStream fis = null;
+            BufferedInputStream bis = null;
+            OutputStream os = null;
+
+            if(clientSocket.isConnected()) {
+                //Config.sendAMessage(bufferedWriter,Config.IMAGE_TYPE);
+                //Config.sendAMessage(bufferedWriter,Config.IMAGE_TYPE);
+                File myFile = new File(IMAGE_PATH);
+                byte[] mybytearray = new byte[(int) myFile.length()];
+                fis = new FileInputStream(myFile);
+
+                bis = new BufferedInputStream(fis);
+                bis.read(mybytearray, 0, mybytearray.length);
+                os = clientSocket.getOutputStream();
+
+                System.out.println("Sending " + IMAGE_PATH + "(" + mybytearray.length + " bytes)");
+                os.write(mybytearray, 0, mybytearray.length);
+                os.flush();
+                System.out.println("Done.");
             }
         }
 
@@ -202,7 +230,6 @@ public class Broker {
 
             byte [] mybytearray  = new byte [FILE_SIZE];
 
-
             fos = new FileOutputStream(FILE_TO_RECEIVED);
             bos = new BufferedOutputStream(fos);
             bytesRead = inputStream.read(mybytearray,0,mybytearray.length);
@@ -213,9 +240,9 @@ public class Broker {
                 try{
                     bytesRead =inputStream.read(mybytearray, current, (mybytearray.length-current));
 
-                if(bytesRead >= 0) {
-                    current += bytesRead;
-                }
+                    if(bytesRead >= 0) {
+                        current += bytesRead;
+                    }
                 }catch (IOException e)
                 {
                     bytesRead=-1;
@@ -270,23 +297,32 @@ public class Broker {
         }
         public void run() {
 
-            while (clientSocket.isConnected()) {
+            if (clientSocket.isConnected()) {
                 try {
                     //Images
 
-                    //acceptImage();
-                    //broadcastImage();
-
+                    String message_type=bufferedReader.readLine();
+                    if(message_type.equals(Config.IMAGE_TYPE)) {
+                        acceptImage();
+                        //broadcastImage();
+                    }
                     // Messages
-                    acceptMessage();
+                    if(message_type.equals(Config.MESSAGE_TYPE)){
+                        acceptMessage();
+                    }
+
+
+                    //
 //
                     
 
                 } catch (IOException e) {
-                    //closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    throw new RuntimeException(e);
+                }
+                //closeEverything(clientSocket, bufferedReader, bufferedWriter);
 
                 }
             }
         }
     }
-}
+

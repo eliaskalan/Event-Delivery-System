@@ -2,6 +2,7 @@ package controller;
 
 import model.MultimediaFile;
 import model.Value;
+import utils.Config;
 
 import java.io.*;
 import java.net.Socket;
@@ -10,8 +11,14 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
+    private InputStream inputStream;
+    public final static String
+            FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
+    public final static int FILE_SIZE = 6022386;
+
     private Socket socket;
     Consumer(Socket socket) throws IOException {
+        this.inputStream=socket.getInputStream();
         this.socket = socket;
         try{
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -37,6 +44,73 @@ public class Consumer{
             }
         }).start();
     }
+    public void listenForImage() throws IOException {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                String message_type = null;
+                try {
+                    message_type = bufferedReader.readLine();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                int bytesRead;
+                int current = 0;
+                FileOutputStream fos = null;
+                BufferedOutputStream bos = null;
+                //System.out.println("Connecting...");
+                // receive file
+
+
+
+                    byte[] mybytearray = new byte[FILE_SIZE];
+
+                    try {
+                        fos = new FileOutputStream(FILE_TO_RECEIVED);
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                    bos = new BufferedOutputStream(fos);
+                    try {
+                        bytesRead = inputStream.read(mybytearray, 0, mybytearray.length);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    current = bytesRead;
+
+                    do {
+                        try {
+                            bytesRead = inputStream.read(mybytearray, current, (mybytearray.length - current));
+
+                            if (bytesRead >= 0) {
+                                current += bytesRead;
+                            }
+                        } catch (IOException e) {
+                            bytesRead = -1;
+                        }
+                    } while (bytesRead > -1);
+
+                    try {
+                        bos.write(mybytearray, 0, current);
+                        bos.flush();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    System.out.println(current);
+                    System.out.println("File " + FILE_TO_RECEIVED
+                            + " downloaded (" + current + " bytes read)");
+
+
+            }
+        }).start();
+
+
+
+    }
 
 
     public String listenForMessageOneTime() throws IOException {
@@ -49,68 +123,6 @@ public class Consumer{
       System.out.println(listenForMessageOneTime());
     }
 
-    public final static String
-            FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
-    public final static int FILE_SIZE = 6022386;
-    public void listenForImages(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (socket.isConnected()) {
 
-                    int bytesRead;
-                    int current = 0;
-                    FileOutputStream fos = null;
-                    BufferedOutputStream bos = null;
-                    System.out.println("Connecting...");
-                    // receive file
-                    byte[] mybytearray = new byte[FILE_SIZE];
-                    InputStream is = null;
-                    try {
-                        is = socket.getInputStream();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    try {
-                        fos = new FileOutputStream(FILE_TO_RECEIVED);
-                    } catch (FileNotFoundException e) {
-                        throw new RuntimeException(e);
-                    }
-                    bos = new BufferedOutputStream(fos);
-                    try {
-                        bytesRead = is.read(mybytearray, 0, mybytearray.length);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
 
-                    current = bytesRead;
-                    do {
-                        try {
-                            bytesRead =
-                                    is.read(mybytearray, current, (mybytearray.length - current));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        if (bytesRead >= 0) current += bytesRead;
-                    } while (bytesRead > -1);
-
-                    try {
-                        bos.write(mybytearray, 0, current);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    try {
-                        bos.flush();
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                    System.out.println(current);
-                    System.out.println("File " + FILE_TO_RECEIVED
-                            + " downloaded (" + current + " bytes read)");
-
-                }
-            }
-
-        }).start();
-    }
 }

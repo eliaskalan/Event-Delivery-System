@@ -39,7 +39,7 @@ public class Client {
 
         //Images
         //client.consumer.listenForImages();
-        //client.publisher.sendImage();
+
 
         //Messages
 
@@ -61,9 +61,30 @@ public class Client {
         client.publisher.sendOneTimeMessage(username);
         client.publisher.sendOneTimeMessage(client.profileName.getUserId());
         client.publisher.sendOneTimeMessage(topicName);
+        System.out.println("1: Message, 2: Image");
+        String message_type=scanner.nextLine();
+        //TODO message needs while image needs if
 
-        client.consumer.listenForMessage();
-        client.publisher.sendMessage();
+            while (message_type.equals("1")) {
+                client.consumer.listenForMessage();
+
+                //client.publisher.sendMessage();
+            }
+            if (message_type.equals("2")) {
+
+                client.publisher.sendImage();
+
+
+            }
+            if(message_type.equals("3"))
+            {
+                client.consumer.listenForImage();
+            }
+            //System.out.println("1: Message, 2: Image");
+            //message_type=scanner.nextLine();
+
+
+
 
 
 
