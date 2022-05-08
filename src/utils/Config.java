@@ -8,15 +8,22 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Enumeration;
 import java.util.Random;
 import java.util.Scanner;
 
 public class Config {
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
-    public static Address ZOOKEEPER_BROKERS = new Address(22345);
-    public static Address ZOOKEEPER_CLIENTS = new Address(22346);
+
+    public static String ZOOKEEPER_IP = "localhost";
+    public static Address ZOOKEEPER_BROKERS = new Address(ZOOKEEPER_IP, 22345);
+    public static Address ZOOKEEPER_CLIENTS = new Address(ZOOKEEPER_IP, 22346);
     public static Address BROKER_1 = new Address(22351);
     public static Address BROKER_2 = new Address(22352);
     public static Address BROKER_3 = new Address(22353);
@@ -98,5 +105,30 @@ public class Config {
         Scanner scanner = new Scanner(System.in);
         System.out.println(message);
         return scanner.nextLine();
+    }
+    public static String getPublicIp() {
+        String ip;
+        try {
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface iface = interfaces.nextElement();
+                if (iface.isLoopback() || !iface.isUp())
+                    continue;
+
+                Enumeration<InetAddress> addresses = iface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress addr = addresses.nextElement();
+
+                    if (addr instanceof Inet6Address) continue;
+
+                    ip = addr.getHostAddress();
+                    System.out.println(ip);
+                    return ip;
+                }
+            }
+        } catch (SocketException e) {
+            throw new RuntimeException(e);
+        }
+        return "localhost";
     }
 }
