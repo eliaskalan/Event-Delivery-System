@@ -37,10 +37,13 @@ public class Publisher{
     }
 
 
-    public void sendMessage(){
+    public void sendMessage() throws IOException {
         Scanner scanner = new Scanner(System.in);
         while (socket.isConnected()) {
             String messageToSend = scanner.nextLine();
+            if(messageToSend.equals("EXIT")){
+                throw new IOException("Go to zookeeper");
+            }
             Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
         }
     }

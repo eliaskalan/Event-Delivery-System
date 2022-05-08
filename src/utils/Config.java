@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Config {
     public static String SAVED_FILES_PATH = "C:/Users/elias/Documents/";
@@ -89,5 +90,11 @@ public class Config {
             System.out.println("Problem to read message");
             throw new RuntimeException(e);
         }
+    }
+
+    public static String readFromUser(String message){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(message);
+        return scanner.nextLine();
     }
 }
