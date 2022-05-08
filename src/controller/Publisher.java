@@ -83,4 +83,49 @@ public class Publisher{
         }
 
     }
+
+    public void sendVideo(String video_name, String folder_for_chunks) throws Exception{
+        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+
+        //        while(socket.isConnected()) {
+
+        MultimediaFile mf = new MultimediaFile();
+        mf.SplitFile(video_name, folder_for_chunks);
+
+        File splitFiles = new File(folder_for_chunks);
+        File[] files = splitFiles.getAbsoluteFile().listFiles();
+
+        try {
+            dataOutputStream.write(files.length);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (File file : files) {
+            System.out.println(file.getAbsolutePath());
+            try {
+                sendChunk(file.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void sendChunk(String path) throws Exception{
+        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+        int bytes = 0;
+        File file = new File(path);
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        // send file size
+        dataOutputStream.writeLong(file.length());
+
+        byte[] buffer = new byte[(int)file.length()];
+        while ((bytes=fileInputStream.read(buffer))!=-1){
+            dataOutputStream.write(buffer,0,bytes);
+            dataOutputStream.flush();
+        }
+
+        //        fileInputStream.close();
+    }
 }

@@ -115,4 +115,47 @@ public class Consumer{
         }).start();
 
     }
+
+    public void listenForVideo(String [] files) throws InterruptedException, IOException {
+        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (socket.isConnected()) {
+                    int numOfFiles = 0;
+                    try {
+                        numOfFiles = dataInputStream.read();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    for (String file : files) {
+                        try {
+                            receiveChunk(file);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    String path_of_transferred_chunks = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
+                    String path_of_joined_file = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
+                    MultimediaFile mf = new MultimediaFile();
+                    mf.JoinVideo("myVid.mkv", path_of_transferred_chunks, path_of_joined_file);
+                }
+            }
+        }).start();
+    }
+
+    private void receiveChunk(String fileName) throws Exception{
+        DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
+        int bytes = 0;
+        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+        long size = dataInputStream.readLong();     // read file size
+        System.out.println("size: " + size);
+        byte[] buffer = new byte[(int)size];
+        while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+            fileOutputStream.write(buffer,0,bytes);
+            size -= bytes;      // read upto file size
+        }
+        //        fileOutputStream.close();
+    }
 }

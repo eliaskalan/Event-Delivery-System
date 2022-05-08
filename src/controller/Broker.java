@@ -311,6 +311,69 @@ public class Broker {
             }
         }
 
+
+        public void acceptVideo(String [] files) throws Exception{
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
+            int numOfFiles = dataInputStream.read();
+            System.out.println("numOfFiles: " + numOfFiles);
+
+            for (String file : files) {
+                receiveChunk(file);
+            }
+
+            /*String path_of_transferred_chunks = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
+            String path_of_joined_file = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
+            MultimediaFile mf = new MultimediaFile();
+            mf.JoinVideo("myVid.mkv", path_of_transferred_chunks, path_of_joined_file);*/
+        }
+
+        private void receiveChunk(String fileName) throws Exception{
+            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
+            int bytes = 0;
+            FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+            long size = dataInputStream.readLong();     // read file size
+            System.out.println("size: " + size);
+            byte[] buffer = new byte[(int)size];
+            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+                fileOutputStream.write(buffer,0,bytes);
+                size -= bytes;      // read upto file size
+            }
+            //            fileOutputStream.close();
+        }
+
+        public void broadcastVideo(String video_name, String folder_for_chunks) throws Exception {
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());;
+            System.out.println(clientSocket.isConnected());
+
+            for (ClientHandler client : registerClient) {
+
+                // if (!client.clientUsername.equals(clientUsername)) {
+                File splitFiles = new File(folder_for_chunks);
+                File[] files = splitFiles.getAbsoluteFile().listFiles();
+                dataOutputStream.write(files.length);
+                for (File file : files) {
+                    System.out.println(file.getAbsolutePath());
+                    broadcastChunk(file.getAbsolutePath());
+                }
+                // }
+            }
+        }
+        private void broadcastChunk(String path) throws Exception{
+            DataOutputStream dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
+            int bytes = 0;
+            File file = new File(path);
+            FileInputStream fileInputStream = new FileInputStream(file);
+            // send file size
+            dataOutputStream.writeLong(file.length());
+            System.out.println("file.length(): " + file.length());
+            // break file into chunks
+            byte[] buffer = new byte[(int)file.length()];
+            while ((bytes=fileInputStream.read(buffer))!=-1){
+                dataOutputStream.write(buffer,0,bytes);
+                dataOutputStream.flush();
+            }
+            //fileInputStream.close();
+        }
         public  int returnTopicFromUserId(String id){
             int i = 0;
             for(Topic topic : topics){
