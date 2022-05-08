@@ -153,8 +153,9 @@ public class Broker {
                         int index = user.lastMessageHasUserRead;
                         while(index < topic.messageLength()){
                             Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
-                            user.setLastMessageHasUserRead(index);
                             index++;
+                            user.setLastMessageHasUserRead(index);
+
                         }
                         
                     } catch (NullPointerException e) {
