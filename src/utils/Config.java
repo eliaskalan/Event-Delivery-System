@@ -38,6 +38,16 @@ public class Config {
     public static final int NUMBER_OF_BROKERS = 3;
 
     public static final String EXIT_FROM_TOPIC = "EXIT";
+
+    // paths for video
+    // path of original file to send
+    public static final String PATH_OF_ORIGINAL_FILE = "C:/Users/user/Videos/vidsForProject/";
+    // path that contains the chunks after split function
+    public static final String PATH_OF_CHUNKS_FOR_SPLIT_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\chunksFromPublisher\\";
+    // path that contains the chhunks after receiveChunk() and join() function
+    public static final String PATH_OF_CHUNKS_FOR_JOIN_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
+    // path that contais the joined video
+    public static final String PATH_OF_JOIN_FILE_FOR_JOIN_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
     public static String calculateKeys(Address address) {
         try {
             String hashtext;

@@ -72,7 +72,7 @@ public class Client {
         client.initialBroker(topicName);
         while (true){
             try{
-                client.consumer.listenForMessage();
+                // client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){
                 client.socket.close();
@@ -83,6 +83,8 @@ public class Client {
                 address = client.getBrokerAddress();
                 client  = new Client(address, username);
                 client.initialBroker(topicName);
+            }catch (Exception e){
+                System.out.println("error on Client --> main() --> (probably for video)");
             }
         }
 

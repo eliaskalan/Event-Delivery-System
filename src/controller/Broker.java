@@ -317,33 +317,36 @@ public class Broker {
         }
 
 
-        public void acceptVideo(String [] files) throws Exception{
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
-            int numOfFiles = dataInputStream.read();
-            System.out.println("numOfFiles: " + numOfFiles);
-
-            for (String file : files) {
-                receiveChunk(file);
+        public void acceptVideo() throws Exception{
+            String chunkName = "";
+            System.out.println("acceptVideo()");
+            int numOfChunks = (int) objectInputStream.readObject(); // receive the number of chunks
+            System.out.println("ateee");
+            for(int i=0; i<numOfChunks; i++){
+                chunkName = (String) objectInputStream.readObject(); // receive every chunk name
+                receiveChunk(Config.PATH_OF_CHUNKS_FOR_JOIN_FUNC + chunkName);
             }
 
-            /*String path_of_transferred_chunks = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
-            String path_of_joined_file = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
+
+
             MultimediaFile mf = new MultimediaFile();
-            mf.JoinVideo("myVid.mkv", path_of_transferred_chunks, path_of_joined_file);*/
+            mf.JoinVideo("myVid.mkv");
         }
 
+
+        // to path pou thelw na ta lavw, dio to san orisma ths acceptVideo()
         private void receiveChunk(String fileName) throws Exception{
-            DataInputStream dataInputStream = new DataInputStream(clientSocket.getInputStream());;
             int bytes = 0;
             FileOutputStream fileOutputStream = new FileOutputStream(fileName);
-            long size = dataInputStream.readLong();     // read file size
-            System.out.println("size: " + size);
-            byte[] buffer = new byte[(int)size];
-            while (size > 0 && (bytes = dataInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
+
+            long size = (long) objectInputStream.readObject(); // read file size
+
+            byte[] buffer = new byte[500*1024];
+            while (size > 0 && (bytes = objectInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
                 fileOutputStream.write(buffer,0,bytes);
                 size -= bytes;      // read upto file size
             }
-            //            fileOutputStream.close();
+            fileOutputStream.close();
         }
 
         public void broadcastVideo(String video_name, String folder_for_chunks) throws Exception {
@@ -413,8 +416,9 @@ public class Broker {
 
                     // Messages
 //                    messageFromClient = bufferedReader.readLine();
-                    int msgFromObjStream = (int) objectInputStream.readObject();
-                    System.out.println("arithmos pou stream object: " + msgFromObjStream);
+                    String video_name = (String) objectInputStream.readObject();
+                    System.out.println("video name to send: " + video_name);
+                    acceptVideo();
 
 //                    System.out.println("Server log: " + messageFromClient);
 
@@ -423,14 +427,19 @@ public class Broker {
 //                    topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
 //                    readyForPull();
                 } catch (IOException e) {
+                    System.out.println("IOException e || Broker -> run()");
                     removeClient();
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
                 } catch (NullPointerException e){
+                    System.out.println("NullPointerException e || Broker -> run()");
                     removeClient();
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
                 } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (Exception e) {
+                    System.out.println("error on Broker --> run() --> (probably for video)");
                     throw new RuntimeException(e);
                 }
             }

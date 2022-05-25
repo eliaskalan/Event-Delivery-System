@@ -41,7 +41,7 @@ public class Publisher{
     }
 
 
-    public void sendMessage() throws IOException {
+    public void sendMessage() throws Exception {
         Scanner scanner = new Scanner(System.in);
         while (socket.isConnected()) {
             System.out.println("Publisher - sendMessage()");
@@ -51,8 +51,9 @@ public class Publisher{
             if (messageToSend.contains(".mkv")){ // send video
                 System.out.println("empiken sto if tou sendVid");
                 // SEND_VIDEO
-                objectOutputStream.writeObject(1111);
+                objectOutputStream.writeObject(messageToSend);
                 objectOutputStream.flush();
+                sendVideo(messageToSend);
                 System.out.println("eperasen pou ta objectOutputStreams");
             }
             else if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
@@ -100,48 +101,47 @@ public class Publisher{
 
     }
 
-    public void sendVideo(String video_name, String folder_for_chunks) throws Exception{
-        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
-
-        //        while(socket.isConnected()) {
-
+    public void sendVideo(String video_name) throws Exception{
+        System.out.println("sendVideo()");
+        // thelw na mpei sto path, j na piasei ta chunks arxeia j na ta stili
+        // => tha mpei mesa, tha ta valei se pinaka j tha kalei me to path thn receive
         MultimediaFile mf = new MultimediaFile();
-        mf.SplitFile(video_name, folder_for_chunks);
+        mf.SplitFile(video_name);
 
-        File splitFiles = new File(folder_for_chunks);
+        // path pou exw mesa ta splittes arxeia
+        File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC);
         File[] files = splitFiles.getAbsoluteFile().listFiles();
 
-        try {
-            dataOutputStream.write(files.length);
-        } catch (IOException e) {
-            e.printStackTrace();
+        // send number of chunks
+        objectOutputStream.writeObject(files.length);
+        objectOutputStream.flush();
+
+        for(File file: files){
+            // gia orisma thn sendChunk() dio oullo to path j to onoma tou arxeiou pou thelw na steilw
+            // ara en tha allaksw kati sto orisma pou thelw na ths doko
+
+            objectOutputStream.writeObject(file.getName()); // send every chunk name
+            objectOutputStream.flush();
+            sendChunk(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC, file.getName());
         }
 
-        for (File file : files) {
-            System.out.println(file.getAbsolutePath());
-            try {
-                sendChunk(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    private void sendChunk(String path) throws Exception{
-        DataOutputStream dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    private void sendChunk(String pathOfChunks, String chunkName) throws Exception{
         int bytes = 0;
-        File file = new File(path);
+        File file = new File(pathOfChunks + chunkName);
         FileInputStream fileInputStream = new FileInputStream(file);
 
-        // send file size
-        dataOutputStream.writeLong(file.length());
+        objectOutputStream.writeObject(file.length()); // send file size
+        objectOutputStream.flush();
 
-        byte[] buffer = new byte[(int)file.length()];
+        byte[] buffer = new byte[500*1024]; // break file into chunks // send chunks
         while ((bytes=fileInputStream.read(buffer))!=-1){
-            dataOutputStream.write(buffer,0,bytes);
-            dataOutputStream.flush();
+            objectOutputStream.write(buffer,0,bytes);
+            objectOutputStream.flush();
         }
 
-        //        fileInputStream.close();
+        fileInputStream.close();
     }
+
 }

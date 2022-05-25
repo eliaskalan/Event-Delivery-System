@@ -117,7 +117,7 @@ public class Consumer{
 
     }
 
-    public void listenForVideo(String [] files) throws InterruptedException, IOException {
+    /*public void listenForVideo(String [] files) throws InterruptedException, IOException {
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
         new Thread(new Runnable() {
             @Override
@@ -144,9 +144,9 @@ public class Consumer{
                 }
             }
         }).start();
-    }
+    }*/
 
-    private void receiveChunk(String fileName) throws Exception{
+    /*private void receiveChunk(String fileName) throws Exception{
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());
         int bytes = 0;
         FileOutputStream fileOutputStream = new FileOutputStream(fileName);
@@ -158,5 +158,5 @@ public class Consumer{
             size -= bytes;      // read upto file size
         }
         //        fileOutputStream.close();
-    }
+    }*/
 }
