@@ -48,7 +48,7 @@ public class Publisher{
             String messageToSend = scanner.nextLine();
             // maybe we can send from here an identifier message
 
-            if (messageToSend.contains(".mkv")){ // send video
+            if (messageToSend.contains(".mkv") || messageToSend.contains(".jpg")){ // send video
                 System.out.println("empiken sto if tou sendVid");
                 // SEND_VIDEO
                 objectOutputStream.writeObject(messageToSend);
@@ -102,7 +102,6 @@ public class Publisher{
     }
 
     public void sendVideo(String video_name) throws Exception{
-        System.out.println("sendVideo()");
         // thelw na mpei sto path, j na piasei ta chunks arxeia j na ta stili
         // => tha mpei mesa, tha ta valei se pinaka j tha kalei me to path thn receive
         MultimediaFile mf = new MultimediaFile();
@@ -111,6 +110,10 @@ public class Publisher{
         // path pou exw mesa ta splittes arxeia
         File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC);
         File[] files = splitFiles.getAbsoluteFile().listFiles();
+
+        // send original video name
+        objectOutputStream.writeObject(video_name);
+        objectOutputStream.flush();
 
         // send number of chunks
         objectOutputStream.writeObject(files.length);
@@ -135,7 +138,7 @@ public class Publisher{
         objectOutputStream.writeObject(file.length()); // send file size
         objectOutputStream.flush();
 
-        byte[] buffer = new byte[500*1024]; // break file into chunks // send chunks
+        byte[] buffer = new byte[100*1024]; // break file into chunks // send chunks
         while ((bytes=fileInputStream.read(buffer))!=-1){
             objectOutputStream.write(buffer,0,bytes);
             objectOutputStream.flush();

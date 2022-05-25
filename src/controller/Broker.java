@@ -319,18 +319,16 @@ public class Broker {
 
         public void acceptVideo() throws Exception{
             String chunkName = "";
-            System.out.println("acceptVideo()");
+            String oiginal_video_name = (String) objectInputStream.readObject();
             int numOfChunks = (int) objectInputStream.readObject(); // receive the number of chunks
-            System.out.println("ateee");
+
             for(int i=0; i<numOfChunks; i++){
                 chunkName = (String) objectInputStream.readObject(); // receive every chunk name
                 receiveChunk(Config.PATH_OF_CHUNKS_FOR_JOIN_FUNC + chunkName);
             }
 
-
-
             MultimediaFile mf = new MultimediaFile();
-            mf.JoinVideo("myVid.mkv");
+            mf.JoinVideo(oiginal_video_name);
         }
 
 
@@ -341,7 +339,7 @@ public class Broker {
 
             long size = (long) objectInputStream.readObject(); // read file size
 
-            byte[] buffer = new byte[500*1024];
+            byte[] buffer = new byte[100*1024];
             while (size > 0 && (bytes = objectInputStream.read(buffer, 0, (int)Math.min(buffer.length, size))) != -1) {
                 fileOutputStream.write(buffer,0,bytes);
                 size -= bytes;      // read upto file size
@@ -417,7 +415,7 @@ public class Broker {
                     // Messages
 //                    messageFromClient = bufferedReader.readLine();
                     String video_name = (String) objectInputStream.readObject();
-                    System.out.println("video name to send: " + video_name);
+                    System.out.println("received video name: " + video_name);
                     acceptVideo();
 
 //                    System.out.println("Server log: " + messageFromClient);
