@@ -101,6 +101,7 @@ public class Broker {
     public static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader bufferedReader;
+        private ObjectInputStream objectInputStream;
         private BufferedWriter bufferedWriter;
         private String clientUsername;
         private String clientId;
@@ -110,6 +111,8 @@ public class Broker {
 
             this.clientSocket = socket;
             try{
+                InputStream inputStream = socket.getInputStream();
+                this.objectInputStream = new ObjectInputStream(inputStream);
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 this.clientUsername = bufferedReader.readLine();
@@ -146,6 +149,7 @@ public class Broker {
             for (Topic topic : topics) {
                 for (UserTopic user : topic.getUsers()) {
                     try {
+                        System.out.println("Broker - readyForPull()");
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
                             Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
@@ -163,6 +167,7 @@ public class Broker {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
                     try {
+                        System.out.println("Broker - broadCastMessage()");
                         Config.sendAMessage(client.bufferedWriter, messageToSend);
                     } catch (NullPointerException  e) {
                         removeClient();
@@ -402,18 +407,21 @@ public class Broker {
             while (clientSocket.isConnected()) {
                 try {
                     //Images
-
+                    System.out.println("run() tou Broker --> handler");
                     // acceptImage();
                     // broadcastImage();
 
                     // Messages
-                    messageFromClient = bufferedReader.readLine();
-                    System.out.println("Server log: " + messageFromClient);
+//                    messageFromClient = bufferedReader.readLine();
+                    int msgFromObjStream = (int) objectInputStream.readObject();
+                    System.out.println("arithmos pou stream object: " + msgFromObjStream);
 
-                    String[] arrOfStr = messageFromClient.split(": ");
-                    String userid = arrOfStr[0];
-                    topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
-                    readyForPull();
+//                    System.out.println("Server log: " + messageFromClient);
+
+//                    String[] arrOfStr = messageFromClient.split(": ");
+//                    String userid = arrOfStr[0];
+//                    topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
+//                    readyForPull();
                 } catch (IOException e) {
                     removeClient();
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
@@ -422,6 +430,8 @@ public class Broker {
                     removeClient();
                     closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     break;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

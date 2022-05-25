@@ -30,6 +30,7 @@ public class Consumer{
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
                     try {
+                        System.out.println("Consumer - listenForMessage()");
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
                     } catch (IOException e) {

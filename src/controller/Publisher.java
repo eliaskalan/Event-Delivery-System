@@ -22,6 +22,7 @@ import static utils.socketMethods.closeEverything;
 public class Publisher{
 
     private BufferedWriter bufferedWriter;
+    private ObjectOutputStream objectOutputStream = null;
     private Socket socket;
     ProfileName profileName;
     public static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
@@ -29,6 +30,9 @@ public class Publisher{
         this.socket = socket;
         this.profileName = profileName;
         try{
+            OutputStream outputStream = socket.getOutputStream();
+            this.objectOutputStream = new ObjectOutputStream(outputStream);
+
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
@@ -40,11 +44,23 @@ public class Publisher{
     public void sendMessage() throws IOException {
         Scanner scanner = new Scanner(System.in);
         while (socket.isConnected()) {
+            System.out.println("Publisher - sendMessage()");
             String messageToSend = scanner.nextLine();
-            if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
+            // maybe we can send from here an identifier message
+
+            if (messageToSend.contains(".mkv")){ // send video
+                System.out.println("empiken sto if tou sendVid");
+                // SEND_VIDEO
+                objectOutputStream.writeObject(1111);
+                objectOutputStream.flush();
+                System.out.println("eperasen pou ta objectOutputStreams");
+            }
+            else if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
                 throw new IOException("Go to zookeeper");
             }
-            Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
+            else if(!messageToSend.contains(".mkv")){ // sendMesasge
+                Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
+            }
         }
     }
 
