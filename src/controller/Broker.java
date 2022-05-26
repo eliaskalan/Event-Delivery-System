@@ -103,6 +103,7 @@ public class Broker {
         private BufferedReader bufferedReader;
         private ObjectInputStream objectInputStream;
         private BufferedWriter bufferedWriter;
+        private ObjectOutputStream objectOutputStream;
         private String clientUsername;
         private String clientId;
 
@@ -130,7 +131,7 @@ public class Broker {
             }catch (IOException e){
                 System.out.println("Remove");
                 this.removeClient();
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                closeEverything(socket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
             }
 
         }
@@ -157,7 +158,7 @@ public class Broker {
                         }
                     } catch (NullPointerException e) {
                         this.removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -171,7 +172,7 @@ public class Broker {
                         Config.sendAMessage(client.bufferedWriter, messageToSend);
                     } catch (NullPointerException  e) {
                         removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -310,7 +311,7 @@ public class Broker {
 
                     } catch (NullPointerException e) {
                         removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -412,32 +413,38 @@ public class Broker {
                     // acceptImage();
                     // broadcastImage();
 
-                    // Messages
-//                    messageFromClient = bufferedReader.readLine();
-                    String video_name = (String) objectInputStream.readObject();
-                    System.out.println("received video name: " + video_name);
-                    acceptVideo();
+                    // receive type identifier
+                    String msg_type = (String) objectInputStream.readObject();
+                    System.out.println("thelw msg_type: " + msg_type);
 
-//                    System.out.println("Server log: " + messageFromClient);
+                    if (msg_type.equals("1")){
+                        String video_name = (String) objectInputStream.readObject();
+                        System.out.println("received video name: " + video_name);
+                        acceptVideo();
+                    } else if (msg_type.equals("2")) {
+                        messageFromClient = bufferedReader.readLine();
+                        System.out.println("Server log: " + messageFromClient);
+                        String[] arrOfStr = messageFromClient.split(": ");
+                        String userid = arrOfStr[0];
+                        topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
+                        readyForPull();
+                    }
 
-//                    String[] arrOfStr = messageFromClient.split(": ");
-//                    String userid = arrOfStr[0];
-//                    topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
-//                    readyForPull();
                 } catch (IOException e) {
                     System.out.println("IOException e || Broker -> run()");
                     removeClient();
-                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                     break;
                 } catch (NullPointerException e){
                     System.out.println("NullPointerException e || Broker -> run()");
                     removeClient();
-                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                     break;
                 } catch (ClassNotFoundException e) {
+                    System.out.println("ClassNotFoundException on Broker --> run() --> (probably for video)");
                     throw new RuntimeException(e);
                 } catch (Exception e) {
-                    System.out.println("error on Broker --> run() --> (probably for video)");
+                    System.out.println("Exception on Broker --> run() --> (probably for video)");
                     throw new RuntimeException(e);
                 }
             }

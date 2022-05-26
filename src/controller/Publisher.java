@@ -45,21 +45,27 @@ public class Publisher{
         Scanner scanner = new Scanner(System.in);
         while (socket.isConnected()) {
             System.out.println("Publisher - sendMessage()");
-            String messageToSend = scanner.nextLine();
-            // maybe we can send from here an identifier message
 
-            if (messageToSend.contains(".mkv") || messageToSend.contains(".jpg")){ // send video
-                System.out.println("empiken sto if tou sendVid");
-                // SEND_VIDEO
+            System.out.println("what type of message do you want to send?\n1. Video or photo\n2. Simple message");
+            String msg_type = scanner.nextLine();
+            System.out.println("give your message: ");
+            String messageToSend = scanner.nextLine();
+
+            // send type identifier
+            objectOutputStream.writeObject(msg_type);
+            objectOutputStream.flush();
+
+            if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
+                throw new IOException("Go to zookeeper");
+            }
+            else if (msg_type.equals("1")){ // send video
+                System.out.println("empiken sto if gia na stili video h eikona");
                 objectOutputStream.writeObject(messageToSend);
                 objectOutputStream.flush();
                 sendVideo(messageToSend);
-                System.out.println("eperasen pou ta objectOutputStreams");
             }
-            else if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
-                throw new IOException("Go to zookeeper");
-            }
-            else if(!messageToSend.contains(".mkv")){ // sendMesasge
+            else if(msg_type.equals("2")){ // sendMesasge
+                System.out.println("empiken sto if gia na stili kanoniko minima");
                 Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
             }
         }

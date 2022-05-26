@@ -2,14 +2,21 @@ package utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.*;
 import java.io.IOException;
 import java.net.Socket;
 
 public class socketMethods {
 
-    public static void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+    public static void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter, ObjectInputStream objectInputStream, ObjectOutputStream objectOutputStream) {
 
         try {
+            if (objectInputStream != null) {
+                objectInputStream.close();
+            }
+            if (objectOutputStream != null) {
+                objectOutputStream.close();
+            }
             if (bufferedReader != null) {
                 bufferedReader.close();
             }

@@ -72,7 +72,7 @@ public class Client {
         client.initialBroker(topicName);
         while (true){
             try{
-                // client.consumer.listenForMessage();
+                client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){
                 client.socket.close();
