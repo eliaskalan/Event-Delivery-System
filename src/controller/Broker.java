@@ -320,12 +320,19 @@ public class Broker {
 
         public void acceptVideo() throws Exception{
             String chunkName = "";
+
             String oiginal_video_name = (String) objectInputStream.readObject();
+
+            File splitFile = new File(Config.PATH_OF_CHUNKS_FOR_BROKER + oiginal_video_name + "\\");//Destination folder to sa
+            if (!splitFile.exists()) {
+                splitFile.mkdirs();
+            }
+
             int numOfChunks = (int) objectInputStream.readObject(); // receive the number of chunks
 
             for(int i=0; i<numOfChunks; i++){
                 chunkName = (String) objectInputStream.readObject(); // receive every chunk name
-                receiveChunk(Config.PATH_OF_CHUNKS_FOR_JOIN_FUNC + chunkName);
+                receiveChunk(Config.PATH_OF_CHUNKS_FOR_BROKER + oiginal_video_name + "\\" + chunkName);
             }
 
             MultimediaFile mf = new MultimediaFile();

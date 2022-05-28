@@ -114,7 +114,11 @@ public class Publisher{
         mf.SplitFile(video_name);
 
         // path pou exw mesa ta splittes arxeia
-        File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC);
+        File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\");
+        /*FileWriter myWriter = new FileWriter("filename.txt");
+        myWriter.write(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\");
+        myWriter.close();*/
+        System.out.println(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\");
         File[] files = splitFiles.getAbsoluteFile().listFiles();
 
         // send original video name
@@ -131,7 +135,7 @@ public class Publisher{
 
             objectOutputStream.writeObject(file.getName()); // send every chunk name
             objectOutputStream.flush();
-            sendChunk(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC, file.getName());
+            sendChunk(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\", file.getName());
         }
 
     }

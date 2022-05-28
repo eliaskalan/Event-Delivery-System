@@ -30,7 +30,7 @@ public class MultimediaFile {
 
                 //String videoFileName = file.getName().substring(0, file.getName().lastIndexOf(".")); // Name of the videoFile without extension
                 // "C:/Users/user/Videos/vidsForProject/" + "Videos_Split/" + "myVid.mkv"
-                File splitFile = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC);//Destination folder to save.
+                File splitFile = new File(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + fileName + "\\");//Destination folder to save.
                 if (!splitFile.exists()) {
                     splitFile.mkdirs();
                     System.out.println("Directory Created -> " + splitFile.getAbsolutePath());
@@ -76,7 +76,7 @@ public class MultimediaFile {
 
     public void JoinVideo(String fileName) {
         try {
-            File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_JOIN_FUNC);// get all files which are to be join
+            File splitFiles = new File(Config.PATH_OF_CHUNKS_FOR_BROKER + fileName + "\\");// get all files which are to be join
             if (splitFiles.exists()) {
                 File[] files = splitFiles.getAbsoluteFile().listFiles();
                 if (files.length != 0) {
@@ -86,7 +86,7 @@ public class MultimediaFile {
                     System.out.println("Join file created with name -> "+ joinFileName);
 
                     //String fileName = joinFileName.substring(0, joinFileName.lastIndexOf("."));// video fileName without extension
-                    File fileJoinPath = new File(Config.PATH_OF_JOIN_FILE_FOR_JOIN_FUNC);// merge video files saved in this location
+                    File fileJoinPath = new File(Config.PATH_OF_JOIN_FILE_FOR_JOIN_FUNC + fileName + "\\");// merge video files saved in this location
 
                     if (!fileJoinPath.exists()) {
                         fileJoinPath.mkdirs();

@@ -44,6 +44,8 @@ public class Config {
     public static final String PATH_OF_ORIGINAL_FILE = "C:/Users/user/Videos/vidsForProject/";
     // path that contains the chunks after split function
     public static final String PATH_OF_CHUNKS_FOR_SPLIT_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\chunksFromPublisher\\";
+    // path for chunks for Broker
+    public static final String PATH_OF_CHUNKS_FOR_BROKER = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\";
     // path that contains the chhunks after receiveChunk() and join() function
     public static final String PATH_OF_CHUNKS_FOR_JOIN_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
     // path that contais the joined video
