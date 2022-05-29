@@ -72,6 +72,8 @@ public class Client {
         client.initialBroker(topicName);
         while (true){
             try{
+                client.consumer.listenForVideo();
+
                 client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){

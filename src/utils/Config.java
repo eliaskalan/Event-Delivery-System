@@ -3,10 +3,9 @@ package utils;
 import controller.Address;
 import controller.Topic;
 import controller.TopicZookeeper;
+import model.MultimediaFile;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -112,6 +111,70 @@ public class Config {
             System.out.println("Problem to read message");
             throw new RuntimeException(e);
         }
+    }
+
+    public static void sendVideo(String video_name, ObjectOutputStream objectOutputStream, int vbit) throws Exception{
+        // vbit == 1 if we want to send Video from original folder
+        // vbit == 0 if we want to send chunks from Broker's folder
+
+        // thelw na mpei sto path, j na piasei ta chunks arxeia j na ta stili
+        // => tha mpei mesa, tha ta valei se pinaka j tha kalei me to path thn receive
+        String path = "";
+        if (vbit == 1) {
+            System.out.println("vbit = " + vbit + " => send from Publisher");
+            MultimediaFile mf = new MultimediaFile();
+            mf.SplitFile(video_name);
+            path = Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\";
+        } else if (vbit == 0) {
+            path = Config.PATH_OF_CHUNKS_FOR_BROKER + video_name + "\\";
+            System.out.println("------------------------------------------");
+            System.out.println(path);
+//            objectOutputStream.writeObject("hello consumer!!");
+//            objectOutputStream.flush();
+            System.out.println("------------------------------------------");
+        }
+
+        if (vbit == 1) { // sto telos en tha xreiazetai if dame!!! // del
+            // path pou exw mesa ta splittes arxeia
+            File splitFiles = new File(path);
+            System.out.println(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\");
+            File[] files = splitFiles.getAbsoluteFile().listFiles();
+
+            // send original video name
+            objectOutputStream.writeObject(video_name);
+            objectOutputStream.flush();
+
+            // send number of chunks
+            objectOutputStream.writeObject(files.length);
+            objectOutputStream.flush();
+
+            for (File file : files) {
+                // gia orisma thn sendChunk() dio oullo to path j to onoma tou arxeiou pou thelw na steilw
+                // ara en tha allaksw kati sto orisma pou thelw na ths doko
+
+                objectOutputStream.writeObject(file.getName()); // send every chunk name
+                objectOutputStream.flush();
+                sendChunk(Config.PATH_OF_CHUNKS_FOR_SPLIT_FUNC + video_name + "\\", file.getName(), objectOutputStream);
+            }
+        }
+
+    }
+
+    private static void sendChunk(String pathOfChunks, String chunkName, ObjectOutputStream objectOutputStream) throws Exception{
+        int bytes = 0;
+        File file = new File(pathOfChunks + chunkName);
+        FileInputStream fileInputStream = new FileInputStream(file);
+
+        objectOutputStream.writeObject(file.length()); // send file size
+        objectOutputStream.flush();
+
+        byte[] buffer = new byte[100*1024]; // break file into chunks // send chunks
+        while ((bytes=fileInputStream.read(buffer))!=-1){
+            objectOutputStream.write(buffer,0,bytes);
+            objectOutputStream.flush();
+        }
+
+        fileInputStream.close();
     }
 
     public static String readFromUser(String message){
