@@ -13,6 +13,7 @@ public class Consumer{
     private BufferedReader bufferedReader;
     private Socket socket;
     private InputStream inputStream;
+    private ObjectInputStream objectInputStream = null;
     Consumer(Socket socket) throws IOException {
         this.socket = socket;
         try{
@@ -21,6 +22,38 @@ public class Consumer{
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedReader);
         }
+    }
+
+    public void connectObjStream() throws IOException {
+        InputStream inputStream = socket.getInputStream();
+        this.objectInputStream = new ObjectInputStream(inputStream);
+    }
+
+    public void listenForVideo() throws IOException {
+        System.out.println("listenForVide one time output");
+        if (objectInputStream == null){
+            connectObjStream();
+            System.out.println("-------objStream connected suffesfully!!!!!!!");
+        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String msgFromGroupChat;
+                while (socket.isConnected()) {
+                    try {
+                        if (objectInputStream == null){
+                            connectObjStream();
+                            System.out.println("-------objStream connected suffesfully!!!!!!!");
+                        }
+                        msgFromGroupChat = (String) objectInputStream.readObject();
+                        System.out.println(msgFromGroupChat);
+                        System.out.println("objectStream is working");
+                    } catch (IOException | ClassNotFoundException e) {
+                        closeEverything(socket, bufferedReader);
+                    }
+                }
+            }
+        }).start();
     }
 
     public void listenForMessage() {
