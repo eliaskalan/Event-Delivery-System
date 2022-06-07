@@ -164,28 +164,6 @@ public class Broker {
             }
         }
 
-        public void readyForPullVideo() throws IOException {
-            for (Topic topic : topics) {
-                for (UserTopic user : topic.getUsers()) {
-                    try {
-                        System.out.println("Broker - readyForPullVideo()");
-                        int index = user.lastMessageHasUserRead;
-                        if(index < topic.messageLength()){
-//                            Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
-//                            user.setLastMessageHasUserRead(topic.messageLength());
-                            objectOutputStream.writeObject("hello consumer from readyForPullvideo");
-                            objectOutputStream.flush();
-                        }
-                    } catch (NullPointerException e) {
-                        this.removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
-                    }
-                }
-            }
-        }
-
-
-
         public void broadcastMessage(String messageToSend) {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
@@ -321,7 +299,7 @@ public class Broker {
                                 index++;
                                 user.setLastMessageHasUserRead(index);
                             }
-                           else if(topic.getType(index).equals(Config.IMAGE_TYPE)) {
+                            else if(topic.getType(index).equals(Config.IMAGE_TYPE)) {
                                 Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                                 //Will work with the images
                                 //broadcastImage(topic.getContext(index));
@@ -450,7 +428,6 @@ public class Broker {
                         String video_name = (String) objectInputStream.readObject();
                         System.out.println("received video name: " + video_name);
                         acceptVideo();
-                        readyForPullVideo();
                     } else if (msg_type.equals("2")) {
                         messageFromClient = bufferedReader.readLine();
                         System.out.println("Server log: " + messageFromClient);

@@ -11,18 +11,11 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
-    private ObjectInputStream objectInputStream;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
         this.socket = socket;
         try{
-            System.out.println("prin to socket");
-            InputStream inputStream = socket.getInputStream();
-            System.out.println("meta to socket");
-            this.objectInputStream = new ObjectInputStream(inputStream);
-            System.out.println("meta to this.obj");
-
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
@@ -48,24 +41,6 @@ public class Consumer{
         }).start();
     }
 
-    public void listenForVideo() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                String msgFromGroupChat;
-                while (socket.isConnected()) {
-                    try {
-                        System.out.println("Consumer - listenForVideo()");
-                        msgFromGroupChat = (String) objectInputStream.readObject();
-                        System.out.println(msgFromGroupChat);
-                    } catch (IOException | ClassNotFoundException e) {
-                        closeEverything(socket, bufferedReader);
-                    }
-                }
-            }
-        }).start();
-    }
-
 
     public String listenForMessageOneTime() throws IOException {
         String msg;
@@ -74,7 +49,7 @@ public class Consumer{
     }
 
     public void printListenForMessageOneTime() throws IOException {
-      System.out.println(listenForMessageOneTime());
+        System.out.println(listenForMessageOneTime());
     }
 
     public final static String
