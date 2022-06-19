@@ -103,7 +103,7 @@ public class Broker {
         private BufferedReader bufferedReader;
         private ObjectInputStream objectInputStream;
         private BufferedWriter bufferedWriter;
-        private ObjectOutputStream objectOutputStream;
+        private ObjectOutputStream objectOutputStream = null;
         private String clientUsername;
         private String clientId;
 
@@ -134,6 +134,17 @@ public class Broker {
                 closeEverything(socket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
             }
 
+        }
+
+        public void connectObjStream() throws IOException {
+            try {
+                OutputStream outputStream = clientSocket.getOutputStream();
+                this.objectOutputStream = new ObjectOutputStream(outputStream);
+            }catch (IOException e){
+                System.out.println("Remove");
+                this.removeClient();
+                closeEverything(clientSocket, objectOutputStream);
+            }
         }
 
         public int getPositionOfTopic(String topic){
@@ -411,6 +422,31 @@ public class Broker {
             System.out.println("We don't find name " + id);
             return "";
         }
+
+        public void readyForPullVideo() throws IOException {
+            System.out.println("readyForPullVideo()");
+            if(objectOutputStream == null){
+                connectObjStream();
+            }
+            for (Topic topic : topics) {
+                for (UserTopic user : topic.getUsers()) {
+                    try {
+                        int index = user.lastMessageHasUserRead;
+                        if(index < topic.messageLength()){
+                            // @TODO allagh gia apostolh video
+                            // -- Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                            user.clientHandler.objectOutputStream.writeObject("Hello World");
+                            user.clientHandler.objectOutputStream.flush();
+//                            user.setLastMessageHasUserRead(topic.messageLength()); @TODO uncomment sthn apostolh vid
+                        }
+                    } catch (NullPointerException e) {
+                        this.removeClient();
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
+                    }
+                }
+            }
+        }
+
         public void run() {
             String messageFromClient;
             while (clientSocket.isConnected()) {
@@ -426,14 +462,22 @@ public class Broker {
 
                     if (msg_type.equals("1")){
                         String video_name = (String) objectInputStream.readObject();
-                        System.out.println("received video name: " + video_name);
                         acceptVideo();
+                        System.out.println("Server log - Vid(): " + video_name);
+
+                        String[] arrOfStr = video_name.split(": "); // gia na mpei to vid sto collection me ta minimata
+                        String userid = arrOfStr[0];
+                        topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
+
+                        readyForPullVideo(); // @TODO need set up
                     } else if (msg_type.equals("2")) {
                         messageFromClient = bufferedReader.readLine();
                         System.out.println("Server log: " + messageFromClient);
+
                         String[] arrOfStr = messageFromClient.split(": ");
                         String userid = arrOfStr[0];
                         topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
+
                         readyForPull();
                     }
 

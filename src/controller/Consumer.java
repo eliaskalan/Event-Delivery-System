@@ -11,6 +11,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
+    private ObjectInputStream objectInputStream = null;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
@@ -20,6 +21,41 @@ public class Consumer{
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedReader);
+        }
+    }
+
+    public void listenForVideo(){
+        System.out.println("listendForVideo()");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(objectInputStream == null){
+                    connectObjStream();
+                }
+                String msgFromGroupChat;
+                while (socket.isConnected()) {
+                    try {
+                        msgFromGroupChat = (String) objectInputStream.readObject();
+                        System.out.println(msgFromGroupChat);
+                    } catch (IOException e) {
+                        closeEverything(socket, objectInputStream);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void connectObjStream(){
+        try{
+            InputStream inputStream = socket.getInputStream();
+            System.out.println("waiting to connect object stream...");
+            this.objectInputStream = new ObjectInputStream(inputStream);
+            System.out.println("Obj stream connected");
+        } catch (IOException ioException) {
+            System.out.println("There was a problem in the connection of the client -- Consumer --> connectObjStream()");
+            closeEverything(socket, bufferedReader, objectInputStream);
         }
     }
 

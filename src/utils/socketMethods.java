@@ -30,6 +30,50 @@ public class socketMethods {
             e.printStackTrace();
         }
     }
+
+    public static void closeEverything(Socket socket, BufferedReader bufferedReader, ObjectInputStream objectInputStream) {
+
+        try {
+            if (bufferedReader != null) {
+                bufferedReader.close();
+            }
+            if (objectInputStream != null) {
+                objectInputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void closeEverything(Socket socket, ObjectInputStream objectInputStream) {
+        try {
+            if (objectInputStream != null) {
+                objectInputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void closeEverything(Socket socket, ObjectOutputStream objectOutputStream) {
+        try {
+            if (objectOutputStream != null) {
+                objectOutputStream.close();
+            }
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void closeEverything(Socket socket, BufferedReader bufferedReader) {
         try {
             if (bufferedReader != null) {

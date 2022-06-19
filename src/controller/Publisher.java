@@ -59,8 +59,7 @@ public class Publisher{
                 throw new IOException("Go to zookeeper");
             }
             else if (msg_type.equals("1")){ // send video
-                System.out.println("empiken sto if gia na stili video h eikona");
-                objectOutputStream.writeObject(messageToSend);
+                objectOutputStream.writeObject(this.profileName.getUserId() + ": " + messageToSend);
                 objectOutputStream.flush();
                 sendVideo(messageToSend);
             }
