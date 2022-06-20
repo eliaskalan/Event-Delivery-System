@@ -153,8 +153,8 @@ public class Broker {
                         System.out.println("Broker - readyForPull()");
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
-                            // apostolh eidous minimatos
-                            Config.sendAMessage(user.clientHandler.bufferedWriter, "2");
+                            // apostolh eidous minimatos ISOS NA MHN XREIAZETAI TELIKA(vlepe periptosis minimatwn)
+                            // Config.sendAMessage(user.clientHandler.bufferedWriter, "2");
 
                             // apostolh minimatos xrhsth
                             Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
@@ -339,8 +339,8 @@ public class Broker {
                 receiveChunk(Config.PATH_OF_CHUNKS_FOR_BROKER + oiginal_video_name + "\\" + chunkName);
             }
 
-            MultimediaFile mf = new MultimediaFile();
-            mf.JoinVideo(oiginal_video_name);
+//            MultimediaFile mf = new MultimediaFile(); einai doulia tou telikou client => del
+//            mf.JoinVideo(oiginal_video_name);
         }
 
 
@@ -423,16 +423,15 @@ public class Broker {
                     try {
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
-                            // apostolh eidous minimatos
-                            user.clientHandler.bufferedWriter.write("1");
+                            // apostolh eidous minimatos: DEN XREIAZETAI, THA STELNW MES TO MINIMA ENA v/f
+                            /*user.clientHandler.bufferedWriter.write("1");
                             bufferedWriter.newLine();
-                            bufferedWriter.flush();
+                            bufferedWriter.flush();*/
                             // @TODO allagh gia apostolh video
-                            // -- Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
-                            Config.sendAMessage(user.clientHandler.bufferedWriter, "Hello");
-                            sendFile("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\foto.jpg\\01_foto.jpg", user.clientHandler.clientSocket);
-//                            user.clientHandler.objectOutputStream.writeObject("Hello World"); // @TODO other buffers + flush()
-//                            user.clientHandler.objectOutputStream.flush();
+
+                            // @TODO  to: topic.getMessagesFromLength(index), kapou prepei na gini LOGO Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                            Config.sendAMessage(user.clientHandler.bufferedWriter, "v/f Hello");
+                            //sendFile("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\foto.jpg\\01_foto.jpg", user.clientHandler.clientSocket);
 
 //                            user.setLastMessageHasUserRead(topic.messageLength()); @TODO uncomment sthn apostolh vid
                         }

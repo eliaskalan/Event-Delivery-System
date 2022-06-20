@@ -60,11 +60,20 @@ public class Consumer{
                         // aplo minima: 2
                         System.out.println("Consumer - listenForMessage()");
                         msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println("eidos minimaos sthn listen: " + msgFromGroupChat);
+                        System.out.println("akousa gia: " + msgFromGroupChat);
+                        // @TODO elegxoi gia idos minimatos:
+                        if(msgFromGroupChat.contains(":")) {
+                            System.out.println("WE FOUND ':' => JUST PRINT THE MESSAGE");
+                        } else if (msgFromGroupChat.equals("")) {
+                            System.out.println("WE FOUND ''  => JUST PRINT THE MESSAGE");
+                        } else if (msgFromGroupChat.contains("v/f")) {
+                            System.out.println("WE FOUND 'v/f' => WAIT FOR VIDEO/FOTO?");
+                        } else {
+                            System.out.println("FOR SOMETHING ELSE, HAAAA JUST PRINT IT...");
+                        }
 
-
-                        msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println("minima xrhsth: " + msgFromGroupChat);
+                        /*msgFromGroupChat = bufferedReader.readLine();
+                        System.out.println("minima xrhsth: " + msgFromGroupChat);*/
 
                     } catch (IOException e) {
                         throw new RuntimeException(e);
