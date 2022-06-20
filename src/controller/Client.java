@@ -76,6 +76,7 @@ public class Client {
                 client.publisher.sendMessage();
 
                 client.consumer.listenForVideo();
+                client.publisher.sendMessage();
             }catch (IOException e){
                 client.socket.close();
                 client  = new Client(Config.ZOOKEEPER_CLIENTS, username);

@@ -11,7 +11,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
-    private ObjectInputStream objectInputStream = null;
+//    private ObjectInputStream objectInputStream = null;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
@@ -29,23 +29,25 @@ public class Consumer{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                if(objectInputStream == null){
+                /*if(objectInputStream == null){
                     connectObjStream();
-                }
+                }*/
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
                     try {
-                        msgFromGroupChat = (String) objectInputStream.readObject();
+                        /*msgFromGroupChat = (String) objectInputStream.readObject();
+                        System.out.println(msgFromGroupChat);*/
+                        msgFromGroupChat = bufferedReader.readLine();
                         System.out.println(msgFromGroupChat);
                     } catch (IOException e) {
-                        closeEverything(socket, objectInputStream);
-                    } catch (ClassNotFoundException e) {
-                        throw new RuntimeException(e);
+//                        closeEverything(socket, objectInputStream);
+                        closeEverything(socket, bufferedReader);
                     }
                 }
             }
         }).start();
     }
+/*
 
     public void connectObjStream(){
         try{
@@ -57,7 +59,7 @@ public class Consumer{
             System.out.println("There was a problem in the connection of the client -- Consumer --> connectObjStream()");
             closeEverything(socket, bufferedReader, objectInputStream);
         }
-    }
+    }*/
 
     public void listenForMessage() {
         new Thread(new Runnable() {

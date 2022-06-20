@@ -136,7 +136,7 @@ public class Broker {
 
         }
 
-        public void connectObjStream() throws IOException {
+        /*public void connectObjStream() throws IOException {
             try {
                 OutputStream outputStream = clientSocket.getOutputStream();
                 this.objectOutputStream = new ObjectOutputStream(outputStream);
@@ -145,7 +145,7 @@ public class Broker {
                 this.removeClient();
                 closeEverything(clientSocket, objectOutputStream);
             }
-        }
+        }*/
 
         public int getPositionOfTopic(String topic){
             for(int i=0; i < topics.size(); i++){
@@ -425,9 +425,9 @@ public class Broker {
 
         public void readyForPullVideo() throws IOException {
             System.out.println("readyForPullVideo()");
-            if(objectOutputStream == null){
+            /*if(objectOutputStream == null){
                 connectObjStream();
-            }
+            }*/
             for (Topic topic : topics) {
                 for (UserTopic user : topic.getUsers()) {
                     try {
@@ -435,13 +435,16 @@ public class Broker {
                         if(index < topic.messageLength()){
                             // @TODO allagh gia apostolh video
                             // -- Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
-                            user.clientHandler.objectOutputStream.writeObject("Hello World");
-                            user.clientHandler.objectOutputStream.flush();
+                            Config.sendAMessage(user.clientHandler.bufferedWriter, "Hello");
+//                            user.clientHandler.objectOutputStream.writeObject("Hello World");
+//                            user.clientHandler.objectOutputStream.flush();
+
 //                            user.setLastMessageHasUserRead(topic.messageLength()); @TODO uncomment sthn apostolh vid
                         }
                     } catch (NullPointerException e) {
                         this.removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
+//                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
+                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
                     }
                 }
             }
