@@ -153,6 +153,10 @@ public class Broker {
                         System.out.println("Broker - readyForPull()");
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
+                            // apostolh eidous minimatos
+                            Config.sendAMessage(user.clientHandler.bufferedWriter, "2");
+
+                            // apostolh minimatos xrhsth
                             Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             user.setLastMessageHasUserRead(topic.messageLength());
                         }
@@ -419,9 +423,14 @@ public class Broker {
                     try {
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
+                            // apostolh eidous minimatos
+                            user.clientHandler.bufferedWriter.write("1");
+                            bufferedWriter.newLine();
+                            bufferedWriter.flush();
                             // @TODO allagh gia apostolh video
                             // -- Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             Config.sendAMessage(user.clientHandler.bufferedWriter, "Hello");
+                            sendFile("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\foto.jpg\\01_foto.jpg", user.clientHandler.clientSocket);
 //                            user.clientHandler.objectOutputStream.writeObject("Hello World"); // @TODO other buffers + flush()
 //                            user.clientHandler.objectOutputStream.flush();
 
@@ -431,6 +440,69 @@ public class Broker {
                         this.removeClient();
 //                        closeEverything(clientSocket, bufferedReader, bufferedWriter, objectInputStream, objectOutputStream);
                         closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    }
+                }
+            }
+        }
+
+        private void sendFile(String path, Socket clientSock) {
+
+            File file = new File(path);
+            // to exw idi
+            // Socket socket = null;
+            try {
+                // to exw idi
+                // socket = new Socket(HOSTNAME, PORT);
+
+                // to impl.
+                PrintStream out = new PrintStream(clientSock.getOutputStream(), true);
+
+                out.println(file.getName());
+                out.println(file.length());
+
+                System.out.println("Sending " + file.getName() + " (" + file.length() + " bytes) to server...");
+
+                writeFile(file, clientSock.getOutputStream());
+
+                System.out.println("Finished sending " + file.getName() + " to server");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (clientSock != null) {
+                    try {
+                        clientSock.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        private void writeFile(File file, OutputStream outStream) {
+            FileInputStream reader = null;
+            try {
+                reader = new FileInputStream(file);
+                byte[] buffer = new byte[Config.CHUNK_SIZE];
+                int pos = 0;
+                int bytesRead;
+                while ((bytesRead = reader.read(buffer, 0, Config.CHUNK_SIZE)) >= 0) {
+                    outStream.write(buffer, 0, bytesRead);
+                    outStream.flush();
+                    pos += bytesRead;
+                    System.out.println(pos + " bytes (" + bytesRead + " bytes read)");
+                }
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Error while reading file");
+                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Error while writing " + file.toString() + " to output stream");
+                e.printStackTrace();
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
             }

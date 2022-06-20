@@ -2,7 +2,8 @@ package controller;
 
 import model.MultimediaFile;
 import model.Value;
-
+import utils.Config;
+import java.lang.*;
 import java.io.*;
 import java.net.Socket;
 import java.security.DigestInputStream;
@@ -54,15 +55,89 @@ public class Consumer{
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
                     try {
+                        // @TODO prepei na stelnw prota to idos minimatos(photo/vid h aplo minima)
+
+                        // aplo minima: 2
                         System.out.println("Consumer - listenForMessage()");
                         msgFromGroupChat = bufferedReader.readLine();
-                        System.out.println(msgFromGroupChat);
+                        System.out.println("eidos minimaos sthn listen: " + msgFromGroupChat);
+
+
+                        msgFromGroupChat = bufferedReader.readLine();
+                        System.out.println("minima xrhsth: " + msgFromGroupChat);
+
                     } catch (IOException e) {
-                        closeEverything(socket, bufferedReader);
+                        throw new RuntimeException(e);
                     }
+
+                        // photo/vid: 1
+                        /*
+                        try {
+
+                            String name = bufferedReader.readLine();
+                            File file = new File("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\elpizw\\foto.jpg\\", name);
+
+                            String size = bufferedReader.readLine();
+                            int fileSize;
+                            System.out.println("SIZE------------------------------: " + size);
+                            try {
+                                fileSize = Integer.parseInt(size);
+                            } catch (NumberFormatException e) {
+                                System.err.println("Error: Malformed file size:" + size);
+                                e.printStackTrace();
+                                return;
+                            }
+
+                            System.out.println("Saving " + file + " from user... (" + fileSize + " bytes)");
+                            saveFile(file, socket.getInputStream());
+                            System.out.println("Finished downloading " + file + " from user.");
+                            if (file.length() != fileSize) {
+                                System.err.println("Error: file incomplete");
+                            }
+
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } finally {
+                            if (socket != null) {
+                                try {
+                                    socket.close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                        // end for video
+                        */
                 }
             }
         }).start();
+    }
+
+    private void saveFile(File file, InputStream inStream) {
+        FileOutputStream fileOut = null;
+        try {
+            fileOut = new FileOutputStream(file);
+
+            byte[] buffer = new byte[Config.CHUNK_SIZE];
+            int bytesRead;
+            int pos = 0;
+            while ((bytesRead = inStream.read(buffer, 0, Config.CHUNK_SIZE)) >= 0) {
+                pos += bytesRead;
+                System.out.println(pos + " bytes (" + bytesRead + " bytes read)");
+                fileOut.write(buffer, 0, bytesRead);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileOut != null) {
+                try {
+                    fileOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        System.out.println("Finished, filesize = " + file.length());
     }
 
 

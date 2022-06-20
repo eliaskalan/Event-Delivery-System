@@ -50,6 +50,8 @@ public class Config {
     public static final String PATH_OF_CHUNKS_FOR_JOIN_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\";
     // path that contais the joined video
     public static final String PATH_OF_JOIN_FILE_FOR_JOIN_FUNC = "C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\joinFinalFile\\";
+
+    public static final int CHUNK_SIZE = 500*1024;
     public static String calculateKeys(Address address) {
         try {
             String hashtext;
