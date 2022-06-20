@@ -136,17 +136,6 @@ public class Broker {
 
         }
 
-        /*public void connectObjStream() throws IOException {
-            try {
-                OutputStream outputStream = clientSocket.getOutputStream();
-                this.objectOutputStream = new ObjectOutputStream(outputStream);
-            }catch (IOException e){
-                System.out.println("Remove");
-                this.removeClient();
-                closeEverything(clientSocket, objectOutputStream);
-            }
-        }*/
-
         public int getPositionOfTopic(String topic){
             for(int i=0; i < topics.size(); i++){
                 if(topics.get(i).getTopicName().equals(topic)){
@@ -425,9 +414,6 @@ public class Broker {
 
         public void readyForPullVideo() throws IOException {
             System.out.println("readyForPullVideo()");
-            /*if(objectOutputStream == null){
-                connectObjStream();
-            }*/
             for (Topic topic : topics) {
                 for (UserTopic user : topic.getUsers()) {
                     try {
@@ -436,7 +422,7 @@ public class Broker {
                             // @TODO allagh gia apostolh video
                             // -- Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             Config.sendAMessage(user.clientHandler.bufferedWriter, "Hello");
-//                            user.clientHandler.objectOutputStream.writeObject("Hello World");
+//                            user.clientHandler.objectOutputStream.writeObject("Hello World"); // @TODO other buffers + flush()
 //                            user.clientHandler.objectOutputStream.flush();
 
 //                            user.setLastMessageHasUserRead(topic.messageLength()); @TODO uncomment sthn apostolh vid

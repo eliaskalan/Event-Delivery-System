@@ -29,9 +29,7 @@ public class Consumer{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                /*if(objectInputStream == null){
-                    connectObjStream();
-                }*/
+
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
                     try {
@@ -47,19 +45,7 @@ public class Consumer{
             }
         }).start();
     }
-/*
 
-    public void connectObjStream(){
-        try{
-            InputStream inputStream = socket.getInputStream();
-            System.out.println("waiting to connect object stream...");
-            this.objectInputStream = new ObjectInputStream(inputStream);
-            System.out.println("Obj stream connected");
-        } catch (IOException ioException) {
-            System.out.println("There was a problem in the connection of the client -- Consumer --> connectObjStream()");
-            closeEverything(socket, bufferedReader, objectInputStream);
-        }
-    }*/
 
     public void listenForMessage() {
         new Thread(new Runnable() {
