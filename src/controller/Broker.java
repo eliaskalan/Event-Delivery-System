@@ -102,6 +102,7 @@ public class Broker {
         private Socket clientSocket;
         private BufferedReader bufferedReader;
         private BufferedWriter bufferedWriter;
+        private ObjectOutputStream objectOutputStream;
         private String clientUsername;
         private String clientId;
 
@@ -132,6 +133,13 @@ public class Broker {
 
         }
 
+        public void connectObjStream() throws IOException {
+            System.out.println("trying to connect on ObjStream...");
+            OutputStream outputStream = this.clientSocket.getOutputStream();
+            this.objectOutputStream = new ObjectOutputStream(outputStream);
+            System.out.println("ObjStream connected!");
+        }
+
         public int getPositionOfTopic(String topic){
             for(int i=0; i < topics.size(); i++){
                 if(topics.get(i).getTopicName().equals(topic)){
@@ -150,6 +158,11 @@ public class Broker {
                         if(index < topic.messageLength()){
                             Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             user.setLastMessageHasUserRead(topic.messageLength());
+                            if(objectOutputStream != null) {
+                                System.out.println("sending msg with obj Stream");
+                                user.clientHandler.objectOutputStream.writeObject("hello Woooooorld!");
+                                user.clientHandler.objectOutputStream.flush();
+                            }
                         }
                     } catch (NullPointerException e) {
                         this.removeClient();
@@ -411,6 +424,12 @@ public class Broker {
                     System.out.println("Server log: " + messageFromClient);
 
                     String[] arrOfStr = messageFromClient.split(": ");
+
+                    if(arrOfStr[1].equals("c")){
+                        System.out.println("if for connection");
+                        connectObjStream();
+                    }
+
                     String userid = arrOfStr[0];
                     topics.get(returnTopicFromUserId(userid)).addMessage(arrOfStr[1], userid, returnNameFromTopicAndUserId(topics.get(returnTopicFromUserId(userid)), userid));
                     readyForPull();

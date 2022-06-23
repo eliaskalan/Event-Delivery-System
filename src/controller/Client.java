@@ -72,6 +72,8 @@ public class Client {
         client.initialBroker(topicName);
         while (true){
             try{
+                client.consumer.listenForMessageVideo();
+
                 client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){
@@ -83,6 +85,8 @@ public class Client {
                 address = client.getBrokerAddress();
                 client  = new Client(address, username);
                 client.initialBroker(topicName);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
 
