@@ -411,6 +411,14 @@ public class Broker {
             System.out.println("We don't find name " + id);
             return "";
         }
+
+        public void connectObjStream() throws IOException {
+            System.out.println("trying to connect on ObjStream...");
+            OutputStream outputStream = this.clientSocket.getOutputStream();
+            this.objectOutputStream = new ObjectOutputStream(outputStream);
+            System.out.println("ObjStream connected!");
+        }
+
         public void run() {
             String messageFromClient;
             while (clientSocket.isConnected()) {
@@ -424,7 +432,11 @@ public class Broker {
                     String msg_type = (String) objectInputStream.readObject();
                     System.out.println("thelw msg_type: " + msg_type);
 
-                    if (msg_type.equals("1")){
+                    if(msg_type.equals("signal")){
+                        System.out.println("signal");
+                        connectObjStream();
+                    }
+                    else if (msg_type.equals("1")){
                         String video_name = (String) objectInputStream.readObject();
                         System.out.println("received video name: " + video_name);
                         acceptVideo();

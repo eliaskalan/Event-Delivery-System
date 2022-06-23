@@ -75,6 +75,11 @@ public class Publisher{
         Config.sendAMessage(bufferedWriter, messageToSend);
     }
 
+    public void sendVideoSignal() throws IOException {
+        objectOutputStream.writeObject("signal");
+        objectOutputStream.flush();
+    }
+
 
 
     public void sendImage() throws IOException {

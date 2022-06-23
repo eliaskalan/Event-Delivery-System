@@ -11,6 +11,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
+    private ObjectInputStream objectInputStream = null;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
@@ -21,6 +22,47 @@ public class Consumer{
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedReader);
         }
+    }
+
+    public void connectObjStream() throws IOException {
+        System.out.println("connect Obj Stream...");
+        try {
+            InputStream inputStream = this.socket.getInputStream();
+            this.objectInputStream = new ObjectInputStream(inputStream);
+            System.out.println("Obj Stream connected!");
+        } catch (IOException ioException) {
+            closeEverything(socket, bufferedReader);
+        }
+    }
+
+    public void listenForMessageVideo() throws Exception {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(objectInputStream == null){
+
+                    try {
+                        connectObjStream();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+                String msgFromGroupChat = "msg From listendForVideo";
+
+                while (socket.isConnected()) {
+                    //                        msgFromGroupChat = bufferedReader.readLine();
+                    try {
+                        msgFromGroupChat = (String) objectInputStream.readObject();
+                        System.out.println(msgFromGroupChat);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }).start();
     }
 
     public void listenForMessage() {

@@ -17,6 +17,7 @@ public class Client {
     Consumer consumer;
     Publisher publisher;
     ProfileName profileName;
+    static boolean vid_signal = false;
     private Socket socket;
     Client(Address address, String name) throws IOException {
         try{
@@ -72,6 +73,13 @@ public class Client {
         client.initialBroker(topicName);
         while (true){
             try{
+                client.consumer.listenForMessageVideo();
+                if(!vid_signal){
+                    System.out.println("client sending signal...");
+                    client.publisher.sendVideoSignal();
+                    vid_signal = true;
+                }
+
                 client.consumer.listenForMessage();
                 client.publisher.sendMessage();
             }catch (IOException e){
