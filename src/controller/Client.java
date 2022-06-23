@@ -29,6 +29,17 @@ public class Client {
         }
     }
 
+    Client(Address address, String name, int v) throws IOException {
+        try{
+            this.socket = new Socket(address.getIp(), address.getPort());
+            this.consumer = new Consumer(socket, 0);
+            this.profileName = new ProfileName(name);
+            this.publisher = new Publisher(socket, profileName);
+        }catch (IOException e){
+            System.out.println("There was a problem in the connection of the client");
+        }
+    }
+
     public void initialBroker(String topicName) throws IOException {
         this.publisher.sendOneTimeMessage(this.profileName.getProfileName());
         this.publisher.sendOneTimeMessage(this.profileName.getUserId());
@@ -68,7 +79,7 @@ public class Client {
         System.out.println("You select " + topicName);
         System.out.println("Complete set up");
         Address address = client.getBrokerAddress();
-        client  = new Client(address, username);
+        client  = new Client(address, username, 0);
         client.initialBroker(topicName);
         while (true){
             try{

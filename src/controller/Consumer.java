@@ -11,12 +11,25 @@ import static utils.socketMethods.closeEverything;
 
 public class Consumer{
     private BufferedReader bufferedReader;
+    private ObjectInputStream objectInputStream;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
         this.socket = socket;
         try{
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException ioException) {
+            System.out.println("There was a problem in the connection of the client");
+            closeEverything(socket, bufferedReader);
+        }
+    }
+
+    Consumer(Socket socket, int v) throws IOException {
+        this.socket = socket;
+        try{
+            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream inputStream = socket.getInputStream();
+            objectInputStream = new ObjectInputStream(inputStream);
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedReader);

@@ -8,12 +8,16 @@ import java.net.Socket;
 
 public class ZookeeperClientHandler implements Runnable{
     private BufferedReader bufferedReader;
+    private ObjectInputStream objectInputStream;
     public BufferedWriter bufferedWriter;
+    private ObjectOutputStream objectOutputStream;
     private InfoTable infoTable;
     private Socket connection;
     public ZookeeperClientHandler(Socket connection, InfoTable infoTable) throws IOException {
         this.connection = connection;
         this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        InputStream inputStream = connection.getInputStream();
+        objectInputStream = new ObjectInputStream(inputStream);
         this.infoTable = infoTable;
     }
 
@@ -23,6 +27,8 @@ public class ZookeeperClientHandler implements Runnable{
         infoTable.addClients(user);
         try {
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+            OutputStream outputStream = connection.getOutputStream();
+            objectOutputStream = new ObjectOutputStream(outputStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

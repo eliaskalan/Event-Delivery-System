@@ -28,15 +28,21 @@ public class Broker {
     private Socket zookeeperSocket;
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
     private BufferedWriter bufferedWriter;
+    private ObjectOutputStream objectOutputStream;
     private BufferedReader bufferedReader;
+    private ObjectInputStream objectInputStream;
     public Broker(Address address) throws IOException {
         this.port = address.getPort();
         this.ip = address.getIp();
         zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
         this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(zookeeperSocket.getOutputStream()));
+        OutputStream outputStream = zookeeperSocket.getOutputStream();
+        objectOutputStream = new ObjectOutputStream(outputStream);
         Config.sendAMessage(this.bufferedWriter, this.ip);
         Config.sendAMessage(this.bufferedWriter, this.port);
         this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
+        InputStream inputStream = zookeeperSocket.getInputStream();
+        objectInputStream = new ObjectInputStream(inputStream);
         int topicsNum = Integer.parseInt( this.bufferedReader.readLine());
         for(int i=0; i < topicsNum; i++){
             String topicName = this.bufferedReader.readLine();
@@ -101,7 +107,9 @@ public class Broker {
     public static class ClientHandler implements Runnable {
         private Socket clientSocket;
         private BufferedReader bufferedReader;
+        private ObjectInputStream objectInputStream;
         private BufferedWriter bufferedWriter;
+        private ObjectOutputStream objectOutputStream;
         private String clientUsername;
         private String clientId;
 
@@ -111,7 +119,11 @@ public class Broker {
             this.clientSocket = socket;
             try{
                 this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                InputStream inputStream = socket.getInputStream();
+                objectInputStream = new ObjectInputStream(inputStream);
                 this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                OutputStream outputStream = socket.getOutputStream();
+                this.objectOutputStream = new ObjectOutputStream(outputStream);
                 this.clientUsername = bufferedReader.readLine();
                 String userId = bufferedReader.readLine();
                 this.clientId = userId;

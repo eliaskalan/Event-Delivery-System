@@ -22,6 +22,7 @@ import static utils.socketMethods.closeEverything;
 public class Publisher{
 
     private BufferedWriter bufferedWriter;
+    private ObjectOutputStream objectOutputStream;
     private Socket socket;
     ProfileName profileName;
     public static String FILE_TO_SEND = MultimediaFile.FOLDER_SAVE + "new.jpeg";
@@ -30,6 +31,8 @@ public class Publisher{
         this.profileName = profileName;
         try{
             this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+            OutputStream outputStream = socket.getOutputStream();
+            objectOutputStream = new ObjectOutputStream(outputStream);
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, bufferedWriter);
