@@ -62,15 +62,22 @@ public class Consumer{
                         msgFromGroupChat = bufferedReader.readLine();
                         System.out.println("akousa gia: " + msgFromGroupChat);
                         // @TODO elegxoi gia idos minimatos:
-                        if(msgFromGroupChat.contains(":")) {
-                            System.out.println("WE FOUND ':' => JUST PRINT THE MESSAGE");
-                        } else if (msgFromGroupChat.equals("")) {
-                            System.out.println("WE FOUND ''  => JUST PRINT THE MESSAGE");
-                        } else if (msgFromGroupChat.contains("v/f")) {
-                            System.out.println("WE FOUND 'v/f' => WAIT FOR VIDEO/FOTO?");
-                        } else {
-                            System.out.println("FOR SOMETHING ELSE, HAAAA JUST PRINT IT...");
+                        if(msgFromGroupChat != null){
+                            if(msgFromGroupChat.contains(":")) {
+                                System.out.println("WE FOUND ':' => JUST PRINT THE MESSAGE");
+                            } else if (msgFromGroupChat.equals("")) {
+                                System.out.println("WE FOUND ''  => JUST PRINT THE MESSAGE");
+                            } else if (msgFromGroupChat.contains("v/f")) {
+                                System.out.println("WE FOUND 'v/f' => WAIT FOR VIDEO/FOTO?");
+                                File file = new File("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\transferredChunks\\foto.jpg\\");
+                                saveFile(file, socket.getInputStream());
+
+                                // MF multimedia file gia join to arxeio
+                            } else {
+                                System.out.println("FOR SOMETHING ELSE, HAAAA JUST PRINT IT...");
+                            }
                         }
+
 
                         /*msgFromGroupChat = bufferedReader.readLine();
                         System.out.println("minima xrhsth: " + msgFromGroupChat);*/

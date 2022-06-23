@@ -431,7 +431,7 @@ public class Broker {
 
                             // @TODO  to: topic.getMessagesFromLength(index), kapou prepei na gini LOGO Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
                             Config.sendAMessage(user.clientHandler.bufferedWriter, "v/f Hello");
-                            //sendFile("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\foto.jpg\\01_foto.jpg", user.clientHandler.clientSocket);
+                            sendFile("C:\\Users\\user\\OneDrive - aueb.gr\\Desktop\\brokersChunks\\foto.jpg\\01_foto.jpg", user.clientHandler.clientSocket);
 
 //                            user.setLastMessageHasUserRead(topic.messageLength()); @TODO uncomment sthn apostolh vid
                         }
