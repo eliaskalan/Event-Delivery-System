@@ -7,7 +7,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class ZookeeperClientHandler implements Runnable{
-    private BufferedReader bufferedReader;
+//    private BufferedReader bufferedReader;
     private ObjectInputStream objectInputStream;
     public BufferedWriter bufferedWriter;
     private ObjectOutputStream objectOutputStream;
@@ -15,14 +15,14 @@ public class ZookeeperClientHandler implements Runnable{
     private Socket connection;
     public ZookeeperClientHandler(Socket connection, InfoTable infoTable) throws IOException {
         this.connection = connection;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//        this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         InputStream inputStream = connection.getInputStream();
         objectInputStream = new ObjectInputStream(inputStream);
         this.infoTable = infoTable;
     }
 
     public void run(){
-        String clientUsername = Config.readAMessage(bufferedReader);
+        String clientUsername = Config.readAMessage(objectInputStream);
         UserZookeeper user = new UserZookeeper(new ProfileName(clientUsername), this);
         infoTable.addClients(user);
         try {
@@ -33,7 +33,7 @@ public class ZookeeperClientHandler implements Runnable{
             throw new RuntimeException(e);
         }
         Config.sendAMessage(user.clientHandler.bufferedWriter, infoTable.printTopics());
-        String idInputs = Config.readAMessage(bufferedReader);
+        String idInputs = Config.readAMessage(objectInputStream);
         int id = Integer.parseInt(idInputs);
         Config.sendAMessage(user.clientHandler.bufferedWriter, infoTable.getTopicNameFromId(id));
         Address address = infoTable.getTopicBroker(id);

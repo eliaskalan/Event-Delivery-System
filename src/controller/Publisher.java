@@ -21,7 +21,7 @@ import static utils.socketMethods.closeEverything;
 
 public class Publisher{
 
-    private BufferedWriter bufferedWriter;
+//    private BufferedWriter bufferedWriter;
     private ObjectOutputStream objectOutputStream;
     private Socket socket;
     ProfileName profileName;
@@ -30,12 +30,12 @@ public class Publisher{
         this.socket = socket;
         this.profileName = profileName;
         try{
-            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//            this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             OutputStream outputStream = socket.getOutputStream();
             objectOutputStream = new ObjectOutputStream(outputStream);
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
-            closeEverything(socket, bufferedWriter);
+            closeEverything(socket, objectOutputStream);
         }
     }
 
@@ -47,12 +47,12 @@ public class Publisher{
             if(messageToSend.equals(Config.EXIT_FROM_TOPIC)){
                 throw new IOException("Go to zookeeper");
             }
-            Config.sendAMessage(bufferedWriter, this.profileName.getUserId() + ": " + messageToSend);
+            Config.sendAMessage(objectOutputStream, this.profileName.getUserId() + ": " + messageToSend);
         }
     }
 
     public void sendOneTimeMessage(String messageToSend) throws IOException {
-        Config.sendAMessage(bufferedWriter, messageToSend);
+        Config.sendAMessage(objectOutputStream, messageToSend);
     }
 
 
@@ -68,7 +68,7 @@ public class Publisher{
             System.out.println("File name");
             String file_name = scanner.nextLine();
             FILE_TO_SEND=FILE_TO_SEND+file_name+".jpeg";
-            Config.sendAMessage(bufferedWriter,Config.IMAGE_TYPE);
+            Config.sendAMessage(objectOutputStream, Config.IMAGE_TYPE);
 
 
             File myFile = new File(FILE_TO_SEND);

@@ -44,7 +44,9 @@ public class Zookeeper {
             }
         }catch (IOException e){
             e.printStackTrace();
-        }finally {
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
             try{
                 zookeeperServerSocket.close();
                 System.out.println("close zookeeper");

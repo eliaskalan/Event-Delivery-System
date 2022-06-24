@@ -14,28 +14,28 @@ import java.util.HashMap;
 public class BrokerHandler implements Runnable{
     private Socket connection;
     private Zookeeper zookeeper;
-    private BufferedReader bufferedReader;
+//    private BufferedReader bufferedReader;
     private ObjectInputStream objectInputStream;
-    private BufferedWriter bufferedWriter;
+//    private BufferedWriter bufferedWriter;
     private ObjectOutputStream objectOutputStream;
-    public BrokerHandler(Socket connection, InfoTable infoTable) throws IOException {
+    public BrokerHandler(Socket connection, InfoTable infoTable) throws IOException, ClassNotFoundException {
         this.connection = connection;
-        this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+//        this.bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         InputStream inputStream = connection.getInputStream();
         objectInputStream = new ObjectInputStream(inputStream);
-        String ip = bufferedReader.readLine();
-        int port = bufferedReader.read();
+        String ip = (String) objectInputStream.readObject();
+        int port = (int) objectInputStream.readObject();
         BrokerInZookeeper bz = new BrokerInZookeeper(ip, port, this);
         infoTable.addBroker(bz);
     }
 
     public void sendTopics(ArrayList<TopicZookeeper> topics) throws IOException {
-        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
+//        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(connection.getOutputStream()));
         OutputStream outputStream = connection.getOutputStream();
         objectOutputStream = new ObjectOutputStream(outputStream);
-        Config.sendAMessage(this.bufferedWriter, Integer.toString(topics.size()));
+        Config.sendAMessage(this.objectOutputStream, Integer.toString(topics.size()));
         for(TopicZookeeper topic: topics){
-            Config.sendAMessage(this.bufferedWriter, topic.getTopicName());
+            Config.sendAMessage(this.objectOutputStream, topic.getTopicName());
         }
 
     }

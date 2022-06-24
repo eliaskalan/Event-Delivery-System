@@ -4,9 +4,7 @@ import controller.Address;
 import controller.Topic;
 import controller.TopicZookeeper;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -81,11 +79,24 @@ public class Config {
         }
 
     }
-    public static void sendAMessage(BufferedWriter bufferedWriter, int message){
+
+    public static void sendAMessage(ObjectOutputStream objectOutputStream, String message){
         try {
-            bufferedWriter.write(message);
-            bufferedWriter.newLine();
-            bufferedWriter.flush();
+            objectOutputStream.writeObject(message);
+//            bufferedWriter.newLine();
+            objectOutputStream.flush();
+        } catch (IOException e) {
+            System.out.println("Problem to send message ~ string");
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public static void sendAMessage(ObjectOutputStream objectOutputStream, Object message){
+        try {
+            objectOutputStream.writeObject(message);
+//            bufferedWriter.newLine();
+            objectOutputStream.flush();
         } catch (IOException e) {
             System.out.println("Problem to send message ~ int");
             throw new RuntimeException(e);
@@ -93,11 +104,13 @@ public class Config {
 
     }
 
-    public static String readAMessage(BufferedReader bufferedReader){
+    public static String readAMessage(ObjectInputStream objectInputStream){
         try {
-           return bufferedReader.readLine();
+           return (String) objectInputStream.readObject();
         } catch (IOException e) {
             System.out.println("Problem to read message");
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

@@ -10,31 +10,23 @@ import java.security.DigestInputStream;
 import static utils.socketMethods.closeEverything;
 
 public class Consumer{
-    private BufferedReader bufferedReader;
+//    private BufferedReader bufferedReader;
     private ObjectInputStream objectInputStream;
     private Socket socket;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
         this.socket = socket;
         try{
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream inputStream = socket.getInputStream();
+            this.objectInputStream = new ObjectInputStream(inputStream);
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
-            closeEverything(socket, bufferedReader);
+            closeEverything(socket, objectInputStream);
         }
     }
 
-    Consumer(Socket socket, int v) throws IOException {
-        this.socket = socket;
-        try{
-            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            InputStream inputStream = socket.getInputStream();
-            objectInputStream = new ObjectInputStream(inputStream);
-        } catch (IOException ioException) {
-            System.out.println("There was a problem in the connection of the client");
-            closeEverything(socket, bufferedReader);
-        }
-    }
+
 
     public void listenForMessage() {
         new Thread(new Runnable() {
@@ -43,10 +35,12 @@ public class Consumer{
                 String msgFromGroupChat;
                 while (socket.isConnected()) {
                     try {
-                        msgFromGroupChat = bufferedReader.readLine();
+                        msgFromGroupChat = (String) objectInputStream.readObject();
                         System.out.println(msgFromGroupChat);
                     } catch (IOException e) {
-                        closeEverything(socket, bufferedReader);
+                        closeEverything(socket, objectInputStream);
+                    } catch (ClassNotFoundException e) {
+                        throw new RuntimeException(e);
                     }
                 }
             }
@@ -54,20 +48,19 @@ public class Consumer{
     }
 
 
-    public String listenForMessageOneTime() throws IOException {
+    public String listenForMessageOneTime() throws IOException, ClassNotFoundException {
         String msg;
-        msg = bufferedReader.readLine();
+        msg = (String) objectInputStream.readObject();
         return msg;
     }
 
-    public void printListenForMessageOneTime() throws IOException {
+    public void printListenForMessageOneTime() throws IOException, ClassNotFoundException {
       System.out.println(listenForMessageOneTime());
     }
 
-    public final static String
-            FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
-    public final static int FILE_SIZE = 6022386;
-    public void listenForImage() throws IOException {
+//    public final static String FILE_TO_RECEIVED = MultimediaFile.FOLDER_SAVE + "ConsumerFile\\" + "new_download.jpeg";
+//    public final static int FILE_SIZE = 6022386;
+    /*public void listenForImage() throws IOException {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -79,8 +72,8 @@ public class Consumer{
 
                 String message_type = null;
                 try {
-                    message_type = bufferedReader.readLine();
-                } catch (IOException e) {
+                    message_type = (String) objectInputStream.readObject();
+                } catch (IOException | ClassNotFoundException e) {
                     throw new RuntimeException(e);
                 }
 
@@ -127,7 +120,7 @@ public class Consumer{
             }
         }).start();
 
-    }
+    }*/
 
     public void listenForVideo(String [] files) throws InterruptedException, IOException {
         DataInputStream dataInputStream = new DataInputStream(socket.getInputStream());

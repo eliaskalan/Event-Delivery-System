@@ -32,7 +32,7 @@ public class Client {
     Client(Address address, String name, int v) throws IOException {
         try{
             this.socket = new Socket(address.getIp(), address.getPort());
-            this.consumer = new Consumer(socket, 0);
+            this.consumer = new Consumer(socket);
             this.profileName = new ProfileName(name);
             this.publisher = new Publisher(socket, profileName);
         }catch (IOException e){
@@ -46,13 +46,13 @@ public class Client {
         this.publisher.sendOneTimeMessage(topicName);
     }
 
-    public Address getBrokerAddress() throws IOException {
+    public Address getBrokerAddress() throws IOException, ClassNotFoundException {
         String ip = this.consumer.listenForMessageOneTime();
         String port = this.consumer.listenForMessageOneTime();
         return new Address(ip, Integer.parseInt(port));
     }
 
-    public String initialConnectWithZookeeperAndGetTopic(String username) throws IOException {
+    public String initialConnectWithZookeeperAndGetTopic(String username) throws IOException, ClassNotFoundException {
         this.publisher.sendOneTimeMessage(username);
         System.out.println("Welcome " + username);
         this.consumer.printListenForMessageOneTime();
@@ -63,7 +63,7 @@ public class Client {
         System.out.println("If you want to exit from topic write " + Config.EXIT_FROM_TOPIC);
         return topicName;
     }
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
         String username = Config.readFromUser("What is your name?");
         Client client  = new Client(Config.ZOOKEEPER_CLIENTS, username);
         String topicName = client.initialConnectWithZookeeperAndGetTopic(username);

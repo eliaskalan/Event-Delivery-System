@@ -27,25 +27,32 @@ public class Broker {
     public ServerSocket socket;
     private Socket zookeeperSocket;
     private static ArrayList<Topic> topics = new ArrayList<Topic>();
-    private BufferedWriter bufferedWriter;
+//    private BufferedWriter bufferedWriter;
     private ObjectOutputStream objectOutputStream;
-    private BufferedReader bufferedReader;
+//    private BufferedReader bufferedReader;
     private ObjectInputStream objectInputStream;
-    public Broker(Address address) throws IOException {
+    public Broker(Address address) throws IOException, ClassNotFoundException {
         this.port = address.getPort();
         this.ip = address.getIp();
         zookeeperSocket  = new Socket(Config.ZOOKEEPER_BROKERS.getIp(), Config.ZOOKEEPER_BROKERS.getPort());
-        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(zookeeperSocket.getOutputStream()));
+//        this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(zookeeperSocket.getOutputStream()));
         OutputStream outputStream = zookeeperSocket.getOutputStream();
         objectOutputStream = new ObjectOutputStream(outputStream);
-        Config.sendAMessage(this.bufferedWriter, this.ip);
-        Config.sendAMessage(this.bufferedWriter, this.port);
-        this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
+
+//        objectOutputStream.writeObject(this.ip);
+//        objectOutputStream.flush();
+        Config.sendAMessage(this.objectOutputStream, this.ip);
+
+//        objectOutputStream.writeObject(this.port);
+//        objectOutputStream.flush();
+        Config.sendAMessage(this.objectOutputStream, this.port);
+
+//        this.bufferedReader = new BufferedReader(new InputStreamReader(zookeeperSocket.getInputStream()));
         InputStream inputStream = zookeeperSocket.getInputStream();
         objectInputStream = new ObjectInputStream(inputStream);
-        int topicsNum = Integer.parseInt( this.bufferedReader.readLine());
+        int topicsNum = Integer.parseInt((String) this.objectInputStream.readObject());
         for(int i=0; i < topicsNum; i++){
-            String topicName = this.bufferedReader.readLine();
+            String topicName = (String) this.objectInputStream.readObject();
             topics.add(new Topic(topicName));
         }
         System.out.println("Broker topics: ");
@@ -106,9 +113,9 @@ public class Broker {
 
     public static class ClientHandler implements Runnable {
         private Socket clientSocket;
-        private BufferedReader bufferedReader;
+//        private BufferedReader bufferedReader;
         private ObjectInputStream objectInputStream;
-        private BufferedWriter bufferedWriter;
+//        private BufferedWriter bufferedWriter;
         private ObjectOutputStream objectOutputStream;
         private String clientUsername;
         private String clientId;
@@ -118,28 +125,30 @@ public class Broker {
 
             this.clientSocket = socket;
             try{
-                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 InputStream inputStream = socket.getInputStream();
                 objectInputStream = new ObjectInputStream(inputStream);
-                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+//                this.bufferedWriter= new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 OutputStream outputStream = socket.getOutputStream();
                 this.objectOutputStream = new ObjectOutputStream(outputStream);
-                this.clientUsername = bufferedReader.readLine();
-                String userId = bufferedReader.readLine();
+                this.clientUsername = (String) objectInputStream.readObject();
+                String userId = (String) objectInputStream.readObject();
                 this.clientId = userId;
-                String topicName = bufferedReader.readLine();
+                String topicName = (String) objectInputStream.readObject();
                 System.out.println(topicName);
                 int topicPosition = getPositionOfTopic(topicName);
                 topics.get(topicPosition).addUser(new ProfileName(clientUsername, userId), this);
-                Config.sendAMessage(bufferedWriter, topics.get(topicPosition).getMessagesFromLength());
+                Config.sendAMessage(objectOutputStream, topics.get(topicPosition).getMessagesFromLength());
                 for(UserTopic user: topics.get(topicPosition).getUsers()){
-                    Config.sendAMessage(user.clientHandler.bufferedWriter, "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
+                    Config.sendAMessage(user.clientHandler.objectOutputStream, "SERVER: " + clientUsername + " has entered the chat!" + topics.get(topicPosition).getTopicName());
                 }
 
             }catch (IOException e){
                 System.out.println("Remove");
                 this.removeClient();
-                closeEverything(socket, bufferedReader, bufferedWriter);
+                closeEverything(socket, objectInputStream, objectOutputStream);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
             }
 
         }
@@ -160,12 +169,12 @@ public class Broker {
                     try {
                         int index = user.lastMessageHasUserRead;
                         if(index < topic.messageLength()){
-                            Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                            Config.sendAMessage(user.clientHandler.objectOutputStream, topic.getMessagesFromLength(index));
                             user.setLastMessageHasUserRead(topic.messageLength());
                         }
                     } catch (NullPointerException e) {
                         this.removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -175,10 +184,10 @@ public class Broker {
             for (ClientHandler client : registerClient) {
                 if(!client.clientUsername.equals(clientUsername)){
                     try {
-                        Config.sendAMessage(client.bufferedWriter, messageToSend);
+                        Config.sendAMessage(client.objectOutputStream, messageToSend);
                     } catch (NullPointerException  e) {
                         removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -301,12 +310,12 @@ public class Broker {
                         int index = user.lastMessageHasUserRead;
                         while(index < topic.messageLength()) {
                             if (topic.getType(index).equals(Config.MESSAGE_TYPE)) {
-                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                Config.sendAMessage(user.clientHandler.objectOutputStream, topic.getMessagesFromLength(index));
                                 index++;
                                 user.setLastMessageHasUserRead(index);
                             }
                            else if(topic.getType(index).equals(Config.IMAGE_TYPE)) {
-                                Config.sendAMessage(user.clientHandler.bufferedWriter, topic.getMessagesFromLength(index));
+                                Config.sendAMessage(user.clientHandler.objectOutputStream, topic.getMessagesFromLength(index));
                                 //Will work with the images
                                 //broadcastImage(topic.getContext(index));
                                 index++;
@@ -317,7 +326,7 @@ public class Broker {
 
                     } catch (NullPointerException e) {
                         removeClient();
-                        closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                        closeEverything(clientSocket, objectInputStream, objectOutputStream);
                     }
                 }
             }
@@ -419,7 +428,7 @@ public class Broker {
                     // broadcastImage();
 
                     // Messages
-                    messageFromClient = bufferedReader.readLine();
+                    messageFromClient = (String) objectInputStream.readObject();
                     System.out.println("Server log: " + messageFromClient);
 
                     String[] arrOfStr = messageFromClient.split(": ");
@@ -428,12 +437,14 @@ public class Broker {
                     readyForPull();
                 } catch (IOException e) {
                     removeClient();
-                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    closeEverything(clientSocket, objectInputStream, objectOutputStream);
                     break;
                 } catch (NullPointerException e){
                     removeClient();
-                    closeEverything(clientSocket, bufferedReader, bufferedWriter);
+                    closeEverything(clientSocket, objectInputStream, objectOutputStream);
                     break;
+                } catch (ClassNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
