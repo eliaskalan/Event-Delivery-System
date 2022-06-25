@@ -94,7 +94,7 @@ public class InfoTable {
 
     public String printTopics(){
         int i = 0;
-        String message = "Topics:";
+        String message = "";
         for(TopicZookeeper topic : this.availableTopics){
             i++;
             message = message + " ~ " + i + ": " + topic.getTopicName();
