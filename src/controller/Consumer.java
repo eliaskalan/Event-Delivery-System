@@ -13,13 +13,22 @@ public class Consumer{
 //    private BufferedReader bufferedReader;
     private ObjectInputStream objectInputStream;
     private Socket socket;
+    private ObjectOutputStream objectOutputStream;
     private InputStream inputStream;
     Consumer(Socket socket) throws IOException {
         this.socket = socket;
         try{
 //            this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+//            input = new ObjectInputStream(socket.getInputStream());
+            System.out.println("done1");
+            objectOutputStream.writeObject("");
+            objectOutputStream.flush();
+
             InputStream inputStream = socket.getInputStream();
+            System.out.println("done2");
             this.objectInputStream = new ObjectInputStream(inputStream);
+            System.out.println("done3");
         } catch (IOException ioException) {
             System.out.println("There was a problem in the connection of the client");
             closeEverything(socket, objectInputStream);
@@ -49,8 +58,11 @@ public class Consumer{
 
 
     public String listenForMessageOneTime() throws IOException, ClassNotFoundException {
-        String msg;
-        msg = (String) objectInputStream.readObject();
+        String msg = "";
+        Object temp = (Object) objectInputStream.readObject();
+        System.out.println("temp: " + temp);
+//        msg = (String) objectInputStream.readObject();
+        msg = String.valueOf(temp);
         return msg;
     }
 

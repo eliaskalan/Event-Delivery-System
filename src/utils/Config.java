@@ -106,7 +106,10 @@ public class Config {
 
     public static String readAMessage(ObjectInputStream objectInputStream){
         try {
-           return (String) objectInputStream.readObject();
+            Object temp = objectInputStream.readObject();
+            System.out.println("temp: " + temp);
+            return "";
+//           return temp; //(String) objectInputStream.readObject();
         } catch (IOException e) {
             System.out.println("Problem to read message");
             throw new RuntimeException(e);
