@@ -55,6 +55,5 @@ Note: This example has 6 channels.
 
 ## **Collaborators**
 
-- Ioannis Apostolou - Ιωάννης Αποστόλου - 3190013
-- Elias Kalantzis - Ηλίας Καλαντζης - 3190068
-- Konstantinos Katsamis - Κωνσταντίνος Κατσάμης - 3190237
+- [@giannistolou](https://github.com/giannistolou)
+- [@eliaskalan](https://github.com/eliaskalan)
